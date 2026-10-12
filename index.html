@@ -2746,6 +2746,18 @@ async function fetchMkt(){
     tmo(fetch('https://api.coingecko.com/api/v3/global'),9000).then(r=>r.json()).then(j=>{const d=j.data;o.dom={btc:d.market_cap_percentage.btc,eth:d.market_cap_percentage.eth,chg:d.market_cap_change_percentage_24h_usd,mc:d.total_market_cap.usd,pct:d.market_cap_percentage};}),
     tmo(fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&price_change_percentage=24h,7d'),12000).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{if(!Array.isArray(j)||!j.length)throw new Error('boş');o.top=j.map((x,i)=>({rank:x.market_cap_rank||i+1,sym:String(x.symbol||'').toUpperCase(),name:x.name,cap:x.market_cap,c24:x.price_change_percentage_24h_in_currency??x.price_change_percentage_24h,c7:x.price_change_percentage_7d_in_currency}));})
   ]);
+  if(!o.dom||!o.top){ // CoinGecko yanıt vermediyse CoinPaprika (anahtarsız) yedek kaynak
+    try{
+      const pq=u=>tmo(fetch(u),12000).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
+      const [g,tk]=await Promise.allSettled([pq('https://api.coinpaprika.com/v1/global'),pq('https://api.coinpaprika.com/v1/tickers?quotes=USD&limit=60')]);
+      const G=g.status==='fulfilled'?g.value:null,T=tk.status==='fulfilled'&&Array.isArray(tk.value)?tk.value:null;
+      if(T&&!o.top){o.top=T.filter(x=>x&&x.quotes&&x.quotes.USD).slice(0,50).map((x,i)=>({rank:x.rank||i+1,sym:String(x.symbol||'').toUpperCase(),name:x.name,cap:x.quotes.USD.market_cap,c24:x.quotes.USD.percent_change_24h,c7:x.quotes.USD.percent_change_7d}));}
+      if(G&&!o.dom&&G.market_cap_usd>0){const mc=G.market_cap_usd,pct={};
+        if(T)T.forEach(x=>{const c=x.quotes&&x.quotes.USD&&x.quotes.USD.market_cap;if(c&&!pct[String(x.symbol).toLowerCase()])pct[String(x.symbol).toLowerCase()]=c/mc*100;});
+        if(G.bitcoin_dominance_percentage)pct.btc=G.bitcoin_dominance_percentage;
+        o.dom={btc:pct.btc,eth:pct.eth,chg:G.market_cap_change_24h,mc:mc,pct:pct};o.src='CoinPaprika (yedek)';}
+    }catch(e){console.error('paprika',e);}
+  }
   const old=S.mkt;if(old){if(!o.top&&old.top)o.top=old.top;if(!o.dom&&old.dom)o.dom=old.dom;if(!o.fng&&old.fng)o.fng=old.fng;}
   S.mkt=o;S.mktT=Date.now();try{mhRecord();}catch(e){}try{updateStrip();}catch(e){}
   fetchMx().catch(()=>{});
