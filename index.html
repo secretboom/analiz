@@ -290,7 +290,7 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 34 · tam ekran/ölçek düzeltmeleri</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 36 · tanı modu: adrese #tani ekle</small></footer>
 </main>
 <nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="analiz"><i>📊</i>Analiz</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="vade"><i>🧭</i>Vadeler</button><button data-v="daha"><i>⋯</i>Daha fazla</button></nav>
 <div id="sbar" style="display:none"></div>
@@ -2799,6 +2799,30 @@ function sozOpen(id){
   if(S.view!=='daha'){setView('daha');}else{render();}
   setTimeout(()=>{const n=INFO[id]&&INFO[id].n;const el=[...document.querySelectorAll('#dbody details')].find(d=>{const s=d.querySelector('summary');return s&&s.textContent.trim()===String(n).trim();});if(el){el.open=true;el.scrollIntoView({block:'center'});}},120);
 }
+
+/* grafik düğmeleri: dokunuş düğmenin neresine denk gelirse gelsin (alanın dışında hafif pay dahil) algıla */
+(function(){
+  let dn=null,routed=0;
+  const find=(x,y)=>{const c=document.getElementById('chcard');if(!c)return null;let best=null,bd=1e9;
+    c.querySelectorAll('.chbtns button,.fstf button').forEach(b=>{const r=b.getBoundingClientRect();if(!r.width||!r.height)return;const P=7;
+      if(x>=r.left-P&&x<=r.right+P&&y>=r.top-P&&y<=r.bottom+P){const d=Math.hypot(x-(r.left+r.width/2),y-(r.top+r.height/2));if(d<bd){bd=d;best=b;}}});
+    return best;};
+  document.addEventListener('pointerdown',e=>{dn=find(e.clientX,e.clientY);},true);
+  document.addEventListener('pointerup',e=>{const b=dn;dn=null;if(!b)return;const u=find(e.clientX,e.clientY);if(u!==b)return;
+    if(e.target===b||b.contains(e.target))return;
+    routed=Date.now();e.preventDefault();b.click();},true);
+  document.addEventListener('click',e=>{if(Date.now()-routed<600){const b=e.target.closest&&e.target.closest('.chbtns button,.fstf button');if(!b){e.stopPropagation();e.preventDefault();}}},true);
+})();
+
+/* tanı modu: adresin sonuna #tani eklenirse her tıklamada hedef eleman ekranda gösterilir */
+(function(){
+  const on=()=>/tani/.test(location.hash);
+  const d=(el)=>el?((el.tagName||'?').toLowerCase()+(el.id?'#'+el.id:'')+(el.className&&typeof el.className==='string'?'.'+el.className.trim().split(/\s+/).join('.'):'')):'yok';
+  document.addEventListener('pointerup',e=>{if(!on())return;let b=document.getElementById('tani');if(!b){b=document.createElement('div');b.id='tani';b.style.cssText='position:fixed;left:6px;bottom:6px;z-index:9999;background:#000c;color:#0f0;font:12px monospace;padding:6px 8px;border-radius:6px;max-width:92vw;white-space:pre-wrap;pointer-events:none';document.body.appendChild(b);}
+    const bt=e.target.closest&&e.target.closest('button');const under=document.elementsFromPoint(e.clientX,e.clientY).slice(0,4).map(d).join(' < ');
+    b.textContent='x='+Math.round(e.clientX)+' y='+Math.round(e.clientY)+' fs='+(S.fs?1:0)+' tip='+e.pointerType+'\nhedef: '+d(e.target)+'\nbutona denk: '+(bt?d(bt):'hayır')+'\nüst katmanlar: '+under;},true);
+  document.addEventListener('click',e=>{if(!on())return;const b=document.getElementById('tani');if(b)b.textContent+='\nclick olayı geldi: '+d(e.target);},true);
+})();
 /* rapor kopyala */
 function copyReport(){
   let t='TEKNİK ANALİZ RAPORU — '+S.sym+'/'+S.quote+'\n'+new Date().toLocaleString('tr-TR')+'\n\n';
