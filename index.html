@@ -376,7 +376,7 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 41 · üst kısım görsele uyarlandı</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 42 · grafik canlı fiyata bağlandı</small></footer>
 </main>
 <nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="analiz"><i>📊</i>Analiz</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="vade"><i>🧭</i>Vadeler</button><button data-v="daha"><i>⋯</i>Daha fazla</button></nav>
 <div id="sbar" style="display:none"></div>
@@ -1878,6 +1878,7 @@ $('#tfs').innerHTML=TFS.map(([k,n])=>'<button data-tf="'+k+'">'+n+'</button>').j
 function markTf(){document.querySelectorAll('#tfs button').forEach(b=>b.classList.toggle('on',b.dataset.tf===S.tf&&S.tab==='detay'));}
 $('#tfs').onclick=async e=>{const b=e.target.closest('button');if(!b)return;const tf=b.dataset.tf;S.tf=tf;S.tab='detay';markTf();
   if(!S.sym){status('Önce bir varlık seç ya da yaz.');return;}
+  if(S.data[tf]&&S.data[tf].at&&Date.now()-S.data[tf].at>60000)delete S.data[tf];
   if(S.data[tf]){render();return;}
   b.classList.add('ld');
   try{await ensure(tf);if(S.tf===tf)render();else status('');}
@@ -2002,7 +2003,7 @@ async function ensure0(tf,mk){
   }
   say(S.sym+(mk==='fut'?' vadeli':'')+' için '+TFNAME[tf]+' veriler çekiliyor…');
   const cands=await kl(sym0,q0,tf,lim(tf));fresh();
-  return st[tf]=analyze(cands,tf);
+  const rs=analyze(cands,tf);rs.at=Date.now();return st[tf]=rs;
 }
 function analyze(cands,tf){
   if(cands.length<60)return {tf,cands,short:true,N:cands.length};
@@ -3096,9 +3097,21 @@ async function liveTick(){
     el.style.display='';
     if(!/^🔔/.test(document.title))document.title=s+' '+P(r.p)+' · Teknik Analiz Masası';
     const bg=document.querySelector('#out .card .big');if(bg)bg.textContent=P(r.p);
+    liveChart(r.p);
     alEval(s,q,r.p);
   }catch(e){if(el)el.classList.add('stale');}
   finally{liveBusy=false;}
+}
+const TFMS={'1m':6e4,'3m':18e4,'5m':3e5,'15m':9e5,'30m':18e5,'1h':36e5,'2h':72e5,'4h':144e5,'6h':216e5,'12h':432e5,'1d':864e5,'3d':2592e5,'1w':6048e5};
+let lcRef=0;
+function liveChart(p){
+  const d=S.data[S.tf];if(!d||!d.A||!d.cands||d.yearly||!(p>0))return;
+  const c=d.cands,n=c.length-1,L=c[n],A=d.A,per=TFMS[S.tf];
+  if(per&&Date.now()>=L.t+per&&Date.now()-lcRef>20000&&S.tab==='detay'&&!S.fs){lcRef=Date.now();const tf=S.tf;delete S.data[tf];ensure(tf).then(()=>{if(S.tf===tf&&S.tab==='detay')render();},()=>{});return;}
+  L.c=p;if(p>L.h)L.h=p;if(p<L.l)L.l=p;
+  if(A.c&&A.i===n){A.c[n]=p;if(A.h&&p>A.h[n])A.h[n]=p;if(A.l&&p<A.l[n])A.l[n]=p;}
+  A.price=p;
+  if(chart&&chart.A===A&&$('#cv'))chart.draw();
 }
 setInterval(liveTick,3000);
 
