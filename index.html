@@ -358,6 +358,24 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
   header #mstrip .mchip.msn{border-right:0;font-weight:700}
   header #mstrip .mchip.msn::before{content:'Piyasa: ';color:var(--m);font-weight:400}
 }
+@media(max-width:1099px){
+  header #mstrip.mstrip{order:20;flex:1 1 100%;display:flex;flex-direction:row;flex-wrap:nowrap;gap:0;background:var(--p2);border:1px solid var(--b);border-radius:10px;padding:3px 2px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  header #mstrip.mstrip::-webkit-scrollbar{display:none}
+  header #mstrip .mr{display:contents}
+  header #mstrip .mr:nth-child(2) .mchip:not(.msn){display:none}
+  header #mstrip .mchip{flex:0 0 auto;background:none;border:0;border-right:1px solid var(--b);border-radius:0;padding:4px 10px;font-size:12px;color:var(--t)}
+  header #mstrip .mchip i{font-size:11px;opacity:1;color:var(--m);margin-right:3px}
+  header #mstrip .mchip b{font-size:13px}
+  header #mstrip .mchip.msn{border-right:0;font-weight:700}
+  header #mstrip .mchip.msn::before{content:'Piyasa: ';color:var(--m);font-weight:400}
+  header #live{order:6;flex:1 1 100%;border:0;background:none;padding:0 2px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  header #live b{font-size:13px;color:var(--m);font-weight:600}
+  header #live .lp{font-size:26px;font-weight:700;color:var(--t)}
+  header #live small{font-size:12px}
+  header #tfs.tfs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  header #tfs.tfs::-webkit-scrollbar{display:none}
+  header #tfs.tfs button{flex:0 0 auto}
+}
 </style></head><body>
 <header>
 <h1>📈 Teknik Analiz Masası</h1>
@@ -376,7 +394,7 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 42 · grafik canlı fiyata bağlandı</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 45 · 30 dk, 45 dk, 2 sa eklendi</small></footer>
 </main>
 <nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="analiz"><i>📊</i>Analiz</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="vade"><i>🧭</i>Vadeler</button><button data-v="daha"><i>⋯</i>Daha fazla</button></nav>
 <div id="sbar" style="display:none"></div>
@@ -718,7 +736,7 @@ function verdictSeries(A) {
   if (A.X) Object.assign(S, extraSeries(A));
   return S;
 }
-const TF_CLASS = { '1m': 'ultra', '3m': 'ultra', '5m': 'ultra', '15m': 'short', '30m': 'short', '1h': 'mid', '2h': 'mid', '4h': 'mid', '6h': 'mid', '12h': 'mid', '1d': 'long', '3d': 'long', '1w': 'long', '1M': 'long' };
+const TF_CLASS = { '1m': 'ultra', '3m': 'ultra', '5m': 'ultra', '15m': 'short', '30m': 'short', '45m': 'short', '1h': 'mid', '2h': 'mid', '4h': 'mid', '6h': 'mid', '12h': 'mid', '1d': 'long', '3d': 'long', '1w': 'long', '1M': 'long' };
 const TF_NOTE = {
   ultra: 'Çok kısa dilimde fiyat hareketinin büyük kısmı rastgele gürültü; komisyon ve spread her sinyalin beklenen kazancını da eritir. Çoğu gösterge burada sık yanlış sinyal verir.',
   short: 'Kısa dilimde (15-30 dk) gürültü hâlâ yüksek. Trend takip göstergeleri geç, salınım göstergeleri (Bollinger, Stokastik, CCI) çok sık ve yanlış sinyal üretir.',
@@ -994,7 +1012,7 @@ function extraSeries(A) {
 }
 
 /* ---- Hepsini birleştir ---- */
-const PER_YEAR = { '1m': 525600, '3m': 175200, '5m': 105120, '15m': 35040, '30m': 17520, '1h': 8760, '2h': 4380, '4h': 2190, '6h': 1460, '12h': 730, '1d': 365, '3d': 121, '1w': 52, '1M': 12 };
+const PER_YEAR = { '1m': 525600, '3m': 175200, '5m': 105120, '15m': 35040, '30m': 17520, '45m': 11680, '1h': 8760, '2h': 4380, '4h': 2190, '6h': 1460, '12h': 730, '1d': 365, '3d': 121, '1w': 52, '1M': 12 };
 function regChannel(c, M) {
   const N = c.length; M = Math.min(M, N); const s0 = N - M;
   let sx = 0, sy = 0, sxx = 0, sxy = 0;
@@ -1821,15 +1839,15 @@ Object.assign(C.prototype,{
 (function(){
 'use strict';
 const T=window.TA,$=s=>document.querySelector(s),fin=Number.isFinite;
-const TFS=[['5m','5 dk'],['15m','15 dk'],['1h','1 sa'],['4h','4 sa'],['1d','Günlük'],['1w','Haftalık'],['1M','Aylık'],['1Y','Yıllık']];
-const TFNAME={'1m':'1 dakika','3m':'3 dakika','5m':'5 dakika','15m':'15 dakika','30m':'30 dakika','1h':'1 saat','2h':'2 saat','4h':'4 saat','6h':'6 saat','12h':'12 saat','1d':'Günlük','3d':'3 günlük','1w':'Haftalık','1M':'Aylık','1Y':'Yıllık'};
+const TFS=[['5m','5 dk'],['15m','15 dk'],['30m','30 dk'],['45m','45 dk'],['1h','1 sa'],['2h','2 sa'],['4h','4 sa'],['1d','Günlük'],['1w','Haftalık'],['1M','Aylık'],['1Y','Yıllık']];
+const TFNAME={'1m':'1 dakika','3m':'3 dakika','5m':'5 dakika','15m':'15 dakika','30m':'30 dakika','45m':'45 dakika','1h':'1 saat','2h':'2 saat','4h':'4 saat','6h':'6 saat','12h':'12 saat','1d':'Günlük','3d':'3 günlük','1w':'Haftalık','1M':'Aylık','1Y':'Yıllık'};
 const BYBIT={'1m':'1','3m':'3','5m':'5','15m':'15','30m':'30','1h':'60','2h':'120','4h':'240','6h':'360','12h':'720','1d':'D','1w':'W','1M':'M'};
-const AUTO={'1Y':1000,'1m':500,'3m':500,'5m':900,'15m':1000,'30m':900,'1h':1000,'2h':900,'4h':900,'6h':700,'12h':700,'1d':730,'3d':400,'1w':400,'1M':120};
+const AUTO={'1Y':1000,'1m':500,'3m':500,'5m':900,'15m':1000,'30m':900,'45m':900,'1h':1000,'2h':900,'4h':900,'6h':700,'12h':700,'1d':730,'3d':400,'1w':400,'1M':120};
 const limAuto=()=>!($('#lim').value||'').trim()||!(+$('#lim').value>0);
 const GRID=()=>document.documentElement.dataset.theme==='light'?'#e3e8ee':'#222a34';
 const lim=tf=>limAuto()?AUTO[tf]:Math.max(60,Math.min(5000,Math.round(+$('#lim').value)));
 const H_OF={'1d':20,'1w':8,'1M':3};
-const ASSETS=[["BTC", "Bitcoin"], ["ETH", "Ethereum"], ["BNB", "BNB"], ["SOL", "Solana"], ["XRP", "XRP"], ["ADA", "Cardano"], ["DOGE", "Dogecoin"], ["AVAX", "Avalanche"], ["DOT", "Polkadot"], ["LINK", "Chainlink"], ["LTC", "Litecoin"], ["POL", "Polygon"], ["TRX", "Tron"], ["TON", "Toncoin"], ["SHIB", "Shiba Inu"], ["UNI", "Uniswap"], ["ATOM", "Cosmos"], ["XLM", "Stellar"], ["NEAR", "Near Protocol"], ["APT", "Aptos"], ["ARB", "Arbitrum"], ["OP", "Optimism"], ["SUI", "Sui"], ["PEPE", "Pepe"], ["INJ", "Injective"], ["FIL", "Filecoin"], ["AAVE", "Aave"], ["RENDER", "Render"], ["BCH", "Bitcoin Cash"], ["ETC", "Ethereum Classic"], ["ALGO", "Algorand"], ["VET", "VeChain"], ["HBAR", "Hedera"], ["FTM", "Fantom"], ["SAND", "The Sandbox"], ["MANA", "Decentraland"], ["AXS", "Axie Infinity"], ["MKR", "Maker"], ["THETA", "Theta"], ["EOS", "EOS"], ["XMR", "Monero"], ["IOTA", "IOTA"], ["NEO", "Neo"], ["DASH", "Dash"], ["ZEC", "Zcash"], ["PENDLE", "Pendle"], ["TIA", "Celestia"], ["SEI", "Sei"], ["JUP", "Jupiter"], ["WLD", "Worldcoin"], ["BONK", "Bonk"], ["FLOKI", "Floki"], ["KAS", "Kaspa"], ["FET", "Fetch.ai"]];
+const ASSETS=[["BTC", "Bitcoin"], ["NIL", "Nillion"], ["ETH", "Ethereum"], ["BNB", "BNB"], ["SOL", "Solana"], ["XRP", "XRP"], ["ADA", "Cardano"], ["DOGE", "Dogecoin"], ["AVAX", "Avalanche"], ["DOT", "Polkadot"], ["LINK", "Chainlink"], ["LTC", "Litecoin"], ["POL", "Polygon"], ["TRX", "Tron"], ["TON", "Toncoin"], ["SHIB", "Shiba Inu"], ["UNI", "Uniswap"], ["ATOM", "Cosmos"], ["XLM", "Stellar"], ["NEAR", "Near Protocol"], ["APT", "Aptos"], ["ARB", "Arbitrum"], ["OP", "Optimism"], ["SUI", "Sui"], ["PEPE", "Pepe"], ["INJ", "Injective"], ["FIL", "Filecoin"], ["AAVE", "Aave"], ["RENDER", "Render"], ["BCH", "Bitcoin Cash"], ["ETC", "Ethereum Classic"], ["ALGO", "Algorand"], ["VET", "VeChain"], ["HBAR", "Hedera"], ["FTM", "Fantom"], ["SAND", "The Sandbox"], ["MANA", "Decentraland"], ["AXS", "Axie Infinity"], ["MKR", "Maker"], ["THETA", "Theta"], ["EOS", "EOS"], ["XMR", "Monero"], ["IOTA", "IOTA"], ["NEO", "Neo"], ["DASH", "Dash"], ["ZEC", "Zcash"], ["PENDLE", "Pendle"], ["TIA", "Celestia"], ["SEI", "Sei"], ["JUP", "Jupiter"], ["WLD", "Worldcoin"], ["BONK", "Bonk"], ["FLOKI", "Floki"], ["KAS", "Kaspa"], ["FET", "Fetch.ai"]];
 const DISP={};const NAMES={};ASSETS.forEach(([s,n])=>{DISP[s]=n;NAMES[s.toLowerCase()]=s;NAMES[n.toLowerCase()]=s;});
 Object.entries({"MATIC": "POL", "BINANCE": "BNB", "BINANCE COIN": "BNB", "BITCOINCASH": "BCH", "SHIBA": "SHIB", "RIPPLE": "XRP", "AXIE": "AXS", "SANDBOX": "SAND", "FETCH": "FET"}).forEach(([k,v])=>NAMES[k.toLowerCase()]=v);
 const symLabel=s=>DISP[s]&&DISP[s]!==s?s+' ('+DISP[s]+')':s;
@@ -1935,7 +1953,20 @@ async function klinesIdx(sym,tf,limit){
     else{cur.h=Math.max(cur.h,v);cur.l=Math.min(cur.l,v);cur.c=v;}});
   return out.slice(-limit);
 }
+function agg45(a){const P=27e5,out=[];let cur=null,n=0;
+  a.forEach(x=>{const k=Math.floor(x.t/P)*P;
+    if(!cur||cur.t!==k){cur={t:k,o:x.o,h:x.h,l:x.l,c:x.c,v:x.v,tb:x.tb,n:1};out.push(cur);}
+    else{cur.h=Math.max(cur.h,x.h);cur.l=Math.min(cur.l,x.l);cur.c=x.c;cur.v+=x.v;cur.tb=(isFinite(cur.tb)&&isFinite(x.tb))?cur.tb+x.tb:NaN;cur.n++;}});
+  if(out.length&&out[0].n<3)out.shift();out.forEach(x=>delete x.n);return out;}
 async function klines(sym,quote,tf,limit){
+  if(tf==='45m'&&!IDX.has(sym))return agg45(await klines0(sym,quote,'15m',limit*3+3)).slice(-limit);
+  return klines0(sym,quote,tf,limit);
+}
+async function klinesFut(sym,quote,tf,limit){
+  if(tf==='45m'&&!IDX.has(sym))return agg45(await klinesFut0(sym,quote,'15m',limit*3+3)).slice(-limit);
+  return klinesFut0(sym,quote,tf,limit);
+}
+async function klines0(sym,quote,tf,limit){
   if(IDX.has(sym))return klinesIdx(sym,tf,limit);
   const pair=sym+quote,errs=[];
   for(const host of ['https://data-api.binance.vision','https://api.binance.com']){
@@ -1959,7 +1990,7 @@ async function klines(sym,quote,tf,limit){
   }catch(e){errs.push('Bybit '+e.message);}
   throw new Error('Veri alınamadı ('+errs.join(', ')+'). İnternet bağlantını ve VPN/güvenlik duvarını kontrol et; Binance bazı ülkelerde/ağlarda engelli olabilir.');
 }
-async function klinesFut(sym,quote,tf,limit){
+async function klinesFut0(sym,quote,tf,limit){
   if(IDX.has(sym))throw new Error('Piyasa endekslerinin vadelisi yok.');
   if(quote!=='USDT'&&quote!=='USDC')throw new Error('Vadeli işlem yalnızca USDT veya USDC karşılığında var.');
   const pair=sym+quote,errs=[];
@@ -3102,7 +3133,7 @@ async function liveTick(){
   }catch(e){if(el)el.classList.add('stale');}
   finally{liveBusy=false;}
 }
-const TFMS={'1m':6e4,'3m':18e4,'5m':3e5,'15m':9e5,'30m':18e5,'1h':36e5,'2h':72e5,'4h':144e5,'6h':216e5,'12h':432e5,'1d':864e5,'3d':2592e5,'1w':6048e5};
+const TFMS={'1m':6e4,'3m':18e4,'5m':3e5,'15m':9e5,'30m':18e5,'45m':27e5,'1h':36e5,'2h':72e5,'4h':144e5,'6h':216e5,'12h':432e5,'1d':864e5,'3d':2592e5,'1w':6048e5};
 let lcRef=0;
 function liveChart(p){
   const d=S.data[S.tf];if(!d||!d.A||!d.cands||d.yearly||!(p>0))return;
