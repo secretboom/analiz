@@ -290,7 +290,7 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 36 · tanı modu: adrese #tani ekle</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 37 · Opera düğme düzeltmesi (tanı: adrese #tani ekle)</small></footer>
 </main>
 <nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="analiz"><i>📊</i>Analiz</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="vade"><i>🧭</i>Vadeler</button><button data-v="daha"><i>⋯</i>Daha fazla</button></nav>
 <div id="sbar" style="display:none"></div>
@@ -2808,9 +2808,13 @@ function sozOpen(id){
       if(x>=r.left-P&&x<=r.right+P&&y>=r.top-P&&y<=r.bottom+P){const d=Math.hypot(x-(r.left+r.width/2),y-(r.top+r.height/2));if(d<bd){bd=d;best=b;}}});
     return best;};
   document.addEventListener('pointerdown',e=>{dn=find(e.clientX,e.clientY);},true);
-  document.addEventListener('pointerup',e=>{const b=dn;dn=null;if(!b)return;const u=find(e.clientX,e.clientY);if(u!==b)return;
-    if(e.target===b||b.contains(e.target))return;
-    routed=Date.now();e.preventDefault();b.click();},true);
+  let lastClick=0;
+  document.addEventListener('click',()=>{lastClick=Date.now();},true);
+  document.addEventListener('pointerup',e=>{const b=dn;dn=null;if(!b)return;if(e.pointerType==='mouse'&&e.button!==0)return;const u=find(e.clientX,e.clientY);if(u!==b)return;
+    const t=Date.now(),direct=e.target===b||b.contains(e.target);
+    if(!direct){routed=t;e.preventDefault();b.click();return;}
+    // tarayıcı (ör. Opera) bırakma olayını iletip tıklama olayını üretmezse: yedek tıklama
+    setTimeout(()=>{if(lastClick<t){routed=Date.now();b.click();}},90);},true);
   document.addEventListener('click',e=>{if(Date.now()-routed<600){const b=e.target.closest&&e.target.closest('.chbtns button,.fstf button');if(!b){e.stopPropagation();e.preventDefault();}}},true);
 })();
 
