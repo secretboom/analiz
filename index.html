@@ -317,6 +317,28 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
   #chcard:not(.fs)>#drbar #drsel:empty{display:none}
 }
 @media(min-width:1100px){#chcard:not(.fs)>h2 .chbtns{flex-wrap:wrap;overflow:visible;margin-left:0}#chcard:not(.fs)>h2{display:flex;align-items:center;gap:8px 12px}}
+
+.aso{display:none}
+@media(min-width:1100px){
+  .aso{display:block;margin-bottom:10px}
+  .aso .ash{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.aso .ash b{font-size:16px}
+  .aso .asr{display:flex;justify-content:space-between;gap:12px;padding:7px 10px;margin-bottom:4px;background:var(--p2);border-radius:8px;font-size:13px}.aso .asr span{color:var(--m)}
+  #dv[data-view=grafik] .vg>:nth-child(5) .top>div:first-child{display:none}
+  #dv[data-view=grafik] .vg>:nth-child(5) .top{margin-bottom:0}
+  /* grafik araç satırı */
+  #ctb{grid-column:1/3;grid-row:1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-right:190px;margin-bottom:10px}
+  #ctb #tfs{display:flex;gap:0;background:var(--p2);border:1px solid var(--b);border-radius:10px;overflow:hidden;flex-wrap:nowrap}
+  #ctb #tfs button{border:0;border-radius:0;background:transparent;padding:8px 12px;font-size:13px}
+  #ctb #tfs button.on{background:var(--a);color:#fff}
+  #ctb .lac{flex:0 0 150px;width:150px;min-width:0}#ctb .lac #lim{min-width:0;width:0;flex:1 1 0}
+  #chcard:not(.fs)>details.lay{grid-row:1;margin-top:0}
+  #chcard:not(.fs)>details.lay>summary{padding:8px 14px;background:var(--p2);border:1px solid var(--b);border-radius:10px;font-size:13px}
+  #chcard:not(.fs)>h2{grid-row:2;padding-right:0;font-size:0;gap:0;margin:0 0 8px}
+  #chcard:not(.fs)>h2 .chbtns{margin-left:auto}#chcard:not(.fs)>h2 .chbtns button{font-size:12px}
+  #chcard:not(.fs)>#drbar,#chcard:not(.fs)>#cv{grid-row:3}
+  #chcard:not(.fs)>#drbar .drsel{top:96px}
+  #chcard:not(.fs)>details.lay[open] .laybody{top:52px}
+}
 </style></head><body>
 <header>
 <h1>📈 Teknik Analiz Masası</h1>
@@ -335,7 +357,7 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 39 · bilgisayar yerleşimi, aşama 2 (tanı: adrese #tani ekle)</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 40 · bilgisayar yerleşimi, görsele yaklaştırma (tanı: adrese #tani ekle)</small></footer>
 </main>
 <nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="analiz"><i>📊</i>Analiz</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="vade"><i>🧭</i>Vadeler</button><button data-v="daha"><i>⋯</i>Daha fazla</button></nav>
 <div id="sbar" style="display:none"></div>
@@ -2038,7 +2060,12 @@ function detayHTML(d){
   const H={rehber:'',head:'',chart:'',test:'',arac:'',grafik:'',emir:'',gosterge:'',seviye:'',guven:'',sozluk:''};let cur='head';
   H.head+=nearHTML(A,price)+summaryHTML(d,sc,rel);
   H.head+='<details class="card fold" id="vinfo"><summary>📖 Varlık bilgisi · '+esc(S.sym)+'</summary>'+cminiHTML(S.sym).replace('class="card cmini"','class="cmini"')+'</details>';
-  H[cur]+='<div class="card"><div class="top"><div><div class="sub">'+esc(symLabel(S.sym)+(IDX.has(S.sym)?'':' / '+S.quote))+' · '+TFNAME[d.tf]+'</div><div class="big">'+P(price)+'</div><div class="sub">'+d.N+' mum analiz edildi ('+(limAuto()?'otomatik':'elle girildi')+')</div><div class="sub">Son mum: '+new Date(d.cands[A.i].t).toLocaleString('tr-TR')+'</div></div>'
+  const adxv=A.I.adx&&A.I.adx.adx?A.I.adx.adx[A.i]:NaN,e200=A.I.ema200?A.I.ema200[A.i]:NaN;
+  const aso='<div class="aso"><div class="ash"><b>Analiz özeti</b><span class="badge '+badgeOf(sc.score)+'">'+labelOf(sc.score)+'</span></div>'
+    +'<div class="asr"><span>Trend</span><b class="'+colOf(sc.score)+'">'+(sc.score>=25?'Güçlü':sc.score>=-25?'Kararsız':'Zayıf')+'</b></div>'
+    +(fin(e200)?'<div class="asr"><span>EMA200</span><b>'+(price>e200?'Fiyat EMA200 üstünde':'Fiyat EMA200 altında')+'</b></div>':'')
+    +(fin(adxv)?'<div class="asr"><span>ADX'+info('adx')+'</span><b>'+adxv.toFixed(0)+' · '+(adxv<20?'trend zayıf':adxv<40?'trend var':'trend güçlü')+'</b></div>':'')+'</div>';
+  H[cur]+='<div class="card">'+aso+'<div class="top"><div><div class="sub">'+esc(symLabel(S.sym)+(IDX.has(S.sym)?'':' / '+S.quote))+' · '+TFNAME[d.tf]+'</div><div class="big">'+P(price)+'</div><div class="sub">'+d.N+' mum analiz edildi ('+(limAuto()?'otomatik':'elle girildi')+')</div><div class="sub">Son mum: '+new Date(d.cands[A.i].t).toLocaleString('tr-TR')+'</div></div>'
    +'<div style="flex:1;min-width:260px"><span class="badge '+badgeOf(sc.score)+'">'+labelOf(sc.score)+'</span> <b class="'+colOf(sc.score)+'">'+(sc.score>0?'+':'')+sc.score.toFixed(0)+'</b>'+info('score')
    +'<div class="gauge"><i style="left:'+((sc.score+100)/2)+'%"></i></div><div class="sub">'+sc.bull+' yukarı · '+sc.bear+' aşağı · '+sc.neu+' nötr gösterge. Skor '+(S.all?'tüm göstergelerden':'bu zaman dilimi için önerilen göstergelerden')+' hesaplandı.</div></div>'
    +'<div><label class="note"><input type="checkbox" id="allchk" '+(S.all?'checked':'')+' style="width:auto"> Önerilmeyenleri de skora kat</label></div></div>'
@@ -2378,7 +2405,7 @@ function setView(v){
   if(v!=='grafik'&&!(VG[v]||[]).includes(S.dtab))S.dtab=VG[v][0];
   dv.dataset.view=v;const dt=$('#dtabs');dt.innerHTML=subPills();dt.classList.toggle('one',v!=='grafik'&&(VG[v]||[]).length<2&&v!=='daha');
   if(v!=='grafik'){$('#dbody').innerHTML=S.H[S.dtab];afterTab();}
-  navSync();window.scrollTo(0,0);if(v==='grafik'&&chart)chart.draw();
+  navSync();dockTb();window.scrollTo(0,0);if(v==='grafik'&&chart)chart.draw();
 }
 document.addEventListener('DOMContentLoaded',()=>{const nv=$('#bnav');if(nv)nv.addEventListener('click',e=>{const b=e.target.closest('button[data-v]');if(b)setView(b.dataset.v);});});
 
@@ -2872,6 +2899,20 @@ function sozOpen(id){
     b.textContent='x='+Math.round(e.clientX)+' y='+Math.round(e.clientY)+' fs='+(S.fs?1:0)+' tip='+e.pointerType+'\nhedef: '+d(e.target)+'\nbutona denk: '+(bt?d(bt):'hayır')+'\nüst katmanlar: '+under;},true);
   document.addEventListener('click',e=>{if(!on())return;const b=document.getElementById('tani');if(b)b.textContent+='\nclick olayı geldi: '+d(e.target);},true);
 })();
+
+/* araç satırını masaüstünde grafik kartının içine taşı */
+const DESK=window.matchMedia?matchMedia('(min-width:1100px)'):{matches:false};
+function undockTb(){const hd=document.querySelector('header'),live=document.getElementById('live');if(!hd)return;
+  ['lac','tfs'].forEach(k=>{const el=k==='tfs'?document.getElementById('tfs'):document.querySelector('.lac');if(el&&el.parentElement!==hd)hd.insertBefore(el,live);});}
+function dockTb(){
+  const c=document.getElementById('chcard');
+  if(!(DESK.matches&&c&&S.tab==='detay'&&S.view==='grafik'&&!S.fs)){undockTb();return;}
+  let t=document.getElementById('ctb');if(!t){t=document.createElement('div');t.id='ctb';c.insertBefore(t,c.firstChild);}
+  const tf=document.getElementById('tfs'),lac=document.querySelector('.lac');
+  if(tf&&tf.parentElement!==t)t.appendChild(tf);if(lac&&lac.parentElement!==t)t.appendChild(lac);
+}
+const __render=render;render=function(){undockTb();__render.apply(this,arguments);dockTb();};
+try{DESK.addEventListener('change',dockTb);}catch(e){}
 /* rapor kopyala */
 function copyReport(){
   let t='TEKNİK ANALİZ RAPORU — '+S.sym+'/'+S.quote+'\n'+new Date().toLocaleString('tr-TR')+'\n\n';
@@ -3672,7 +3713,7 @@ async function enterFs(){
   if(chart){chart.fs=true;chart.setTouch(true);}
   const de=document.documentElement;try{if(de.requestFullscreen)await de.requestFullscreen({navigationUI:'hide'});else if(de.webkitRequestFullscreen)de.webkitRequestFullscreen();}catch(e){}
   try{if(screen.orientation&&screen.orientation.lock){await screen.orientation.lock('landscape');S.fsLocked=true;}}catch(e){}
-  fsLayout();setTimeout(fsLayout,250);
+  fsLayout();setTimeout(fsLayout,250);dockTb();
 }
 function exitFs(){
   S.fs=false;S.rot=false;const c=$('#chcard');document.body.classList.remove('fsmode');
@@ -3680,7 +3721,7 @@ function exitFs(){
   if(chart){chart.fs=false;chart.rot=false;chart.setTouch(false);}
   try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}
   try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});}catch(e){}
-  setTimeout(()=>{if(chart)chart.draw();},60);
+  setTimeout(()=>{if(chart)chart.draw();},60);dockTb();
 }
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&S.fs&&S.fsReal)exitFs();S.fsReal=!!document.fullscreenElement;});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.fs)exitFs();});
