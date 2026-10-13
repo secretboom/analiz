@@ -272,6 +272,23 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 #mt{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:400;background:var(--p2);color:var(--t);border:1px solid var(--a);border-radius:16px;padding:6px 14px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
 .chbtns button,.fstf button{touch-action:manipulation}
 .charts.fs h2 .chbtns{flex-wrap:wrap;overflow:visible;gap:4px}.charts.fs .chbtns button{min-height:34px;min-width:34px}
+
+/* ===== Geniş ekran (bilgisayar) yerleşimi: grafik solda, özet ve seviyeler sağ sütunda ===== */
+@media(min-width:1100px){
+  main{max-width:1560px}
+  #dv[data-view=grafik] .vg{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:12px;align-items:start}
+  #dv[data-view=grafik] .vg>#chcard{grid-column:1;grid-row:1/span 8;margin:0}
+  #dv[data-view=grafik] .vg>:not(#chcard){grid-column:2;margin:0}
+  #mstrip.mstrip{flex-direction:row;gap:6px;flex-wrap:nowrap}#mstrip .mr{flex:1 1 0;min-width:0}
+}
+@media(min-width:1100px){
+  #dv[data-view=grafik] .vg>:nth-child(5){order:1}
+  #dv[data-view=grafik] .vg>:nth-child(2){order:2}
+  #dv[data-view=grafik] .vg>:nth-child(3){order:3}
+  #dv[data-view=grafik] .vg>:nth-child(4){order:4}
+  #dv[data-view=grafik] .vg>#chcard:not(.fs){position:sticky;top:12px;order:0}
+  .charts:not(.fs) h2 .note{display:none}
+}
 </style></head><body>
 <header>
 <h1>📈 Teknik Analiz Masası</h1>
@@ -290,7 +307,7 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 37 · Opera düğme düzeltmesi (tanı: adrese #tani ekle)</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 38 · bilgisayar yerleşimi, aşama 1 (tanı: adrese #tani ekle)</small></footer>
 </main>
 <nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="analiz"><i>📊</i>Analiz</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="vade"><i>🧭</i>Vadeler</button><button data-v="daha"><i>⋯</i>Daha fazla</button></nav>
 <div id="sbar" style="display:none"></div>
@@ -1338,7 +1355,7 @@ class Chart{
     let subH=95,H=430;const W=cv.parentElement.clientWidth;if(!W)return;
     if(this.compact){const hh=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hh'))||0,avail=window.innerHeight-hh-120,n=subs.length;
       const tot=Math.max(240,Math.min(avail*0.85,560));subH=n?Math.max(44,Math.min(70,Math.round(tot*0.13))):0;H=Math.max(120,Math.round(tot-n*subH))+n*subH;}
-    else H=430+subs.length*subH;
+    else H=(window.innerWidth>=1100?Math.max(430,Math.min(window.innerHeight-330,640)):430)+subs.length*subH;
     if(this.fs){const full=this.rot?window.innerWidth:window.innerHeight,n=subs.length;subH=n?70:0;H=Math.max(200,full-(cv.offsetTop||60)-10);}
     cv.style.height=H+'px';cv.width=W*dpr;cv.height=H*dpr;
     const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
