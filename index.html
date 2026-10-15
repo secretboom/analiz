@@ -400,7 +400,7 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 52 · gövde bölgeleri daraltıldı</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 53 · karşıt mum (arz/talep) bölgeleri</small></footer>
 </main>
 <nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="vade"><i>🧭</i>Yön</button><button data-v="neden"><i>📊</i>Neden</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="plan"><i>🛡️</i>Plan</button><button data-v="daha"><i>⋯</i>Daha</button></nav>
 <div id="sbar" style="display:none"></div>
@@ -1554,9 +1554,9 @@ class Chart{
       g.fillStyle='rgba(168,85,247,.13)';g.fillRect(x0,yt,L+pw-x0,Math.max(2,yb-yt));
       g.strokeStyle='#a855f7';g.lineWidth=1.2;g.setLineDash([6,3]);const yc=Y(q.close);g.beginPath();g.moveTo(x0,yc);g.lineTo(L+pw,yc);g.stroke();g.setLineDash([]);g.lineWidth=1;
       g.fillStyle='#a855f7';g.font='10px system-ui';g.textAlign='left';g.fillText('CME boşluğu %'+Math.abs(q.gp).toFixed(1),x0+4,yc-6);if(q.close>=lo&&q.close<=hi)labels.push([q.close,'#a855f7','CME']);});}
-    if(tg.bz&&this.bzs){this.bzs.forEach(z=>{if(z.top<lo||z.bot>hi)return;const x0=Math.max(L,X(z.im)),yt=Y(z.top),yb=Y(z.bot),c=z.side==='sup'?'46,189,133':z.side==='res'?'246,70,93':'148,163,184';
-      g.fillStyle='rgba('+c+',.13)';g.fillRect(x0,yt,L+pw-x0,Math.max(2,yb-yt));g.strokeStyle='rgba('+c+',.85)';g.lineWidth=1;g.setLineDash([]);g.beginPath();g.moveTo(x0,yt);g.lineTo(L+pw,yt);g.moveTo(x0,Math.max(yt+2,yb));g.lineTo(L+pw,Math.max(yt+2,yb));g.stroke();
-      g.fillStyle='rgb('+c+')';g.font='10px system-ui';g.textAlign='left';g.fillText('Gövde bölgesi · '+z.n+' tepki · '+(z.side==='sup'?'destek':z.side==='res'?'direnç':'içinde'),x0+4,yt-5);});}
+    if(tg.ob&&this.obs){this.obs.forEach(z=>{if(z.top<lo||z.bot>hi)return;const x0=Math.max(L,X(z.i)),yt=Y(z.top),yb=Y(z.bot),c=z.side==='sup'?'46,189,133':'246,70,93';
+      g.fillStyle='rgba('+c+',.16)';g.fillRect(x0,yt,L+pw-x0,Math.max(2,yb-yt));g.strokeStyle='rgba('+c+',.9)';g.lineWidth=1;g.setLineDash([]);g.beginPath();g.moveTo(x0,yt);g.lineTo(L+pw,yt);g.moveTo(x0,Math.max(yt+2,yb));g.lineTo(L+pw,Math.max(yt+2,yb));g.stroke();
+      g.fillStyle='rgb('+c+')';g.font='10px system-ui';g.textAlign='left';g.fillText((z.side==='sup'?'Talep':'Arz')+' bölgesi · '+z.tests+' test',x0+4,yt-5);});}
     if(tg.fvg!==false&&this.fvgs){this.fvgs.forEach(f=>{if(f.top<lo||f.bot>hi)return;const x0=Math.max(L,X(f.im)),yt=Y(f.top),yb=Y(f.bot),c=f.side==='up'?'46,189,133':'246,70,93',cs='rgb('+c+')';
       g.fillStyle='rgba('+c+',.14)';g.fillRect(x0,yt,L+pw-x0,Math.max(2,yb-yt));
       g.strokeStyle=cs;g.lineWidth=1;g.setLineDash([2,3]);const yc=Y(f.mid);g.beginPath();g.moveTo(x0,yc);g.lineTo(L+pw,yc);g.stroke();g.setLineDash([]);
@@ -2150,8 +2150,8 @@ function detayHTML(d){
      +'</div></details>';}).join('')+'</details>'
    +'<div class="warn">'+esc(rel.classNote)+'</div></div>';
   cur='chart';
-  const QK=['ema20','ema50','ema200','sr','fvg','bz','vol','rsi'];
-  const T0=[['ema20','EMA20'],['ema50','EMA50'],['ema200','EMA200'],['cross','Golden/Death Cross'],['bb','Bollinger'],['ichi','Ichimoku'],['sr','Destek/Direnç'],['band','Destek/direnç bölgeleri'],['srn','Ekran dışı seviye notu'],['chan','Trend kanalı'],['ob','Emir duvarları'],['gap','CME boşlukları'],['fvg','Adil değer boşluğu (FVG)'],['bz','Mum gövdesi bölgeleri'],['fib','Fibonacci'],['gann','Gann'],['pivot','Pivot'],['swing','Tepe/Dip'],['pat','Mum formasyonu'],['vol','Hacim'],['delta','Alım/Satım hacmi'],['dcol','Mumları alım/satım baskısına göre boya'],['rsi','RSI'],['macd','MACD'],['stoch','Stokastik']];
+  const QK=['ema20','ema50','ema200','sr','fvg','ob','vol','rsi'];
+  const T0=[['ema20','EMA20'],['ema50','EMA50'],['ema200','EMA200'],['cross','Golden/Death Cross'],['bb','Bollinger'],['ichi','Ichimoku'],['sr','Destek/Direnç'],['band','Destek/direnç bölgeleri'],['srn','Ekran dışı seviye notu'],['chan','Trend kanalı'],['ob','Emir duvarları'],['gap','CME boşlukları'],['fvg','Adil değer boşluğu (FVG)'],['ob','Karşıt mum bölgeleri (arz/talep)'],['fib','Fibonacci'],['gann','Gann'],['pivot','Pivot'],['swing','Tepe/Dip'],['pat','Mum formasyonu'],['vol','Hacim'],['delta','Alım/Satım hacmi'],['dcol','Mumları alım/satım baskısına göre boya'],['rsi','RSI'],['macd','MACD'],['stoch','Stokastik']];
   H[cur]+='<div class="card charts'+(S.pin&&!S.fs?' pinned':'')+(S.fs?' fs'+(S.rot?' rot':''):'')+'" id="chcard"><h2>Grafik <span class="note">sürükle: her yöne kaydır · tekerlek: zaman yakınlaştır · fiyat eksenine sürükle / Shift+tekerlek: fiyat yakınlaştır · çift tık: otomatik ölçek</span><span class="chbtns"><button type="button" id="vzp" title="Fiyat ekseni: yakınlaştır">↕＋</button><button type="button" id="vzm" title="Fiyat ekseni: uzaklaştır">↕－</button><button type="button" id="vza" title="Otomatik ölçeğe dön">⟲</button><button type="button" id="tzp" title="Zaman ekseni: yakınlaştır (daha az mum)">↔＋</button><button type="button" id="tzm" title="Zaman ekseni: uzaklaştır (daha çok mum)">↔－</button><span class="fstf">'+TFS.map(([k,n])=>'<button type="button" data-ftf="'+k+'" class="'+(k===S.tf?'on':'')+'">'+n+'</button>').join('')+'</span><button type="button" id="fsb" title="Tam ekran (telefonda yan döner)">'+(S.fs?'✕ Kapat':'⛶ Tam ekran')+'</button><button type="button" id="drb" title="Çizim ve ölçüm araçları">✏️ Çiz</button><button type="button" class="pinb'+(S.pin?' on':'')+'" id="pinb">'+(S.pin?'📌 Sabit':'📍 Sabitle')+'</button></span></h2><div class="drbar" id="drbar" style="display:none"><div class="drtools">'+DRBAR+'</div><div class="drsel" id="drsel"></div></div><details class="lay"><summary>Katmanlar ve ayarlar</summary><div class="laybody"><div class="lvsel"><span class="note">Destek/direnç sayısı:</span><span class="nlsel">'+lvSelBtns(lvMode())+'</span></div><div class="lvsel"><span class="note">Seviye dilimleri:</span><span class="tfwrap">'+lvTfBtns()+'</span></div><div class="chk">'+T0.filter(x=>QK.includes(x[0])).map(([k,n])=>'<label><input type="checkbox" data-tg="'+k+'" '+(S.tg[k]?'checked':'')+'>'+n+'</label>').join('')+'</div><details class="adv"><summary>Gelişmiş katmanlar</summary><div class="chk">'+T0.filter(x=>!QK.includes(x[0])).map(([k,n])=>'<label><input type="checkbox" data-tg="'+k+'" '+(S.tg[k]?'checked':'')+'>'+n+'</label>').join('')+'</div></details><div class="chbtns set"><button type="button" id="frb" title="Açıkken grafiğe dokunup her yöne sürükleyebilirsin; kapalıyken yukarı-aşağı sürükleme sayfayı kaydırır">'+((window.Chart&&Chart.free===false)?'✋ Serbest: kapalı':'✋ Serbest: açık')+'</button><button type="button" id="axm" title="Fiyat sütununu daralt">◀ Sütun</button><button type="button" id="axp" title="Fiyat sütununu genişlet">Sütun ▶</button></div></div></details><canvas id="cv"></canvas>'+(isFinite(d.cands[d.cands.length-1].tb)?'':'<div class="note">Bu veri kaynağında alım/satım hacmi ayrımı yok; “Alım/Satım hacmi” ve boyama seçenekleri çalışmaz (Binance verisinde çalışır).</div>')+'</div>';
   cur='emir';
   H[cur]+=(S.mk==='fut'?futHTML():obHTML());
@@ -2733,21 +2733,29 @@ function fvgScan(cs){
   return {list,open:list.filter(f=>f.fillI<0),stats};
 }
 function fvgOf(d){if(!d||!d.cands)return {list:[],open:[],stats:null};if(!d.fvg){try{d.fvg=fvgScan(d.cands);}catch(e){console.error('fvg',e);d.fvg={list:[],open:[],stats:null};}}return d.fvg;}
-function bodyZones(d,price){
+function opZones(d,price){
   try{const cs=d.cands,N=cs.length;if(N<30)return [];
-    const atr=(d.A&&d.A.lastATR)||price*0.02,tol=Math.max(price*0.0015,Math.min(0.15*atr,price*0.006)),K=3,pts=[];
-    const tp=i=>Math.max(cs[i].o,cs[i].c),bt=i=>Math.min(cs[i].o,cs[i].c);
-    for(let i=K;i<N-K;i++){let hi=true,lo=true;for(let j=i-K;j<=i+K;j++){if(j===i)continue;if(tp(j)>tp(i))hi=false;if(bt(j)<bt(i))lo=false;}
-      if(hi)pts.push({v:tp(i),i});if(lo)pts.push({v:bt(i),i});}
-    pts.sort((a,b)=>a.v-b.v);
-    const groups=[];let cur=null;
-    pts.forEach(p=>{if(cur&&p.v-cur.max<=tol*0.6&&p.v-cur.min<=tol){cur.max=p.v;cur.m.push(p);}else{cur={min:p.v,max:p.v,m:[p]};groups.push(cur);}});
-    const out=[];
-    groups.forEach(g=>{const idx=g.m.map(x=>x.i).sort((a,b)=>a-b),sep=[];idx.forEach(i=>{if(!sep.length||i-sep[sep.length-1]>=5)sep.push(i);});
-      if(sep.length<2)return;let top=g.max,bot=g.min;if(top-bot<0.15*tol){top+=0.15*tol;bot-=0.15*tol;}
-      const mid=(top+bot)/2;if(Math.abs(mid/price-1)>0.4)return;
-      out.push({top,bot,mid,n:sep.length,im:sep[0],last:sep[sep.length-1],side:price>top?'sup':price<bot?'res':'in'});});
-    return out.sort((a,b)=>Math.abs(a.mid-price)-Math.abs(b.mid-price)).slice(0,4);
+    const atr=(d.A&&d.A.lastATR)||price*0.02,maxR=1.6*atr,K=3,F=4,out=[];
+    const up=i=>cs[i].c>=cs[i].o,rg=i=>cs[i].h-cs[i].l;
+    for(let i=3;i<N-1;i++){
+      const r=rg(i);if(!(r>0)||r>maxR)continue;
+      const prevUp=[1,2,3].filter(k=>up(i-k)).length,prevDn=3-prevUp;
+      let side=null,why='';
+      if(!up(i)&&prevUp>=2){let ok=false;for(let j=i+1;j<=Math.min(N-1,i+F);j++)if(cs[j].c>cs[i].h){ok=true;break;}if(ok){side='sup';why='yükselişte geri çekilme mumu';}}
+      else if(up(i)&&prevDn>=2){let ok=false;for(let j=i+1;j<=Math.min(N-1,i+F);j++)if(cs[j].c<cs[i].l){ok=true;break;}if(ok){side='res';why='düşüşte tepki mumu';}}
+      if(!side&&i>=K&&i<N-K){let lo=true,hi=true;for(let j=i-K;j<=i+K;j++){if(j===i)continue;if(cs[j].l<cs[i].l)lo=false;if(cs[j].h>cs[i].h)hi=false;}
+        if(lo){side='sup';why='dip dönüş mumu';}else if(hi){side='res';why='tepe dönüş mumu';}}
+      if(!side)continue;
+      const top=cs[i].h,bot=cs[i].l;let broken=false,tests=0,inz=false;
+      for(let j=i+(side==='sup'?2:2);j<N;j++){
+        if(side==='sup'&&cs[j].c<bot){broken=true;break;}if(side==='res'&&cs[j].c>top){broken=true;break;}
+        const t=side==='sup'?cs[j].l<=top&&cs[j].c>=bot:cs[j].h>=bot&&cs[j].c<=top;
+        if(t&&!inz){tests++;inz=true;}else if(!t)inz=false;}
+      if(broken)continue;
+      out.push({top,bot,mid:(top+bot)/2,i,tests,side,why});}
+    const pick=[];out.sort((x,y)=>Math.abs(x.mid-price)-Math.abs(y.mid-price));
+    for(const z of out){if(Math.abs(z.mid/price-1)>0.4)continue;if(pick.some(p=>z.bot<p.top&&z.top>p.bot))continue;pick.push(z);if(pick.length>=4)break;}
+    return pick;
   }catch(e){return [];}
 }
 function fvgNear(d,price,lim){return fvgOf(d).open.filter(f=>Math.abs(f.mid/price-1)<=0.3).sort((a,b)=>Math.abs(a.mid-price)-Math.abs(b.mid-price)).slice(0,lim||8);}
@@ -2924,7 +2932,7 @@ function render(){
     const k=e.target.dataset&&e.target.dataset.tg;if(k){S.tg[k]=e.target.checked;saveTg();if(chart)chart.draw();}
   };
   if(S.tab==='vade')drawCot();
-  if(S.tab==='detay'){const d=S.data[S.tf];chart=null;if(d&&d.A){if($('#cv')){chart=new Chart($('#cv'),d.A,d.cands,d.tf,S.tg);chart.compact=S.pin;chart.lvN=lvMode();chart.lvAll=S.lvList||null;chart.fvgs=fvgNear(d,d.A.price,4);chart.bzs=bodyZones(d,d.A.price);chart.fs=!!S.fs;chart.rot=!!S.rot;chart.setTouch();chart.ob=obChart();chart.gaps=(S.gaps&&S.gaps.list)||null;drWire(chart);chart.draw();}afterTab();}}
+  if(S.tab==='detay'){const d=S.data[S.tf];chart=null;if(d&&d.A){if($('#cv')){chart=new Chart($('#cv'),d.A,d.cands,d.tf,S.tg);chart.compact=S.pin;chart.lvN=lvMode();chart.lvAll=S.lvList||null;chart.fvgs=fvgNear(d,d.A.price,4);chart.obs=opZones(d,d.A.price);chart.fs=!!S.fs;chart.rot=!!S.rot;chart.setTouch();chart.ob=obChart();chart.gaps=(S.gaps&&S.gaps.list)||null;drWire(chart);chart.draw();}afterTab();}}
   navSync();
 }
 const setHH=()=>{const h=document.querySelector('header');document.documentElement.style.setProperty('--hh',(h&&getComputedStyle(h).position==='sticky'?h.offsetHeight:0)+'px');};setHH();try{new ResizeObserver(()=>{setHH();if(chart&&$('#cv'))chart.draw();}).observe(document.querySelector('header'));}catch(e){}
