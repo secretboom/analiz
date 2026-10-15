@@ -400,7 +400,7 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 49 · yeni akış: Grafik › Yön › Neden › Seviyeler › Plan › Daha</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 50 · bölge aracı + gövde bölgeleri katmanı</small></footer>
 </main>
 <nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="vade"><i>🧭</i>Yön</button><button data-v="neden"><i>📊</i>Neden</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="plan"><i>🛡️</i>Plan</button><button data-v="daha"><i>⋯</i>Daha</button></nav>
 <div id="sbar" style="display:none"></div>
@@ -1554,6 +1554,9 @@ class Chart{
       g.fillStyle='rgba(168,85,247,.13)';g.fillRect(x0,yt,L+pw-x0,Math.max(2,yb-yt));
       g.strokeStyle='#a855f7';g.lineWidth=1.2;g.setLineDash([6,3]);const yc=Y(q.close);g.beginPath();g.moveTo(x0,yc);g.lineTo(L+pw,yc);g.stroke();g.setLineDash([]);g.lineWidth=1;
       g.fillStyle='#a855f7';g.font='10px system-ui';g.textAlign='left';g.fillText('CME boşluğu %'+Math.abs(q.gp).toFixed(1),x0+4,yc-6);if(q.close>=lo&&q.close<=hi)labels.push([q.close,'#a855f7','CME']);});}
+    if(tg.bz&&this.bzs){this.bzs.forEach(z=>{if(z.top<lo||z.bot>hi)return;const x0=Math.max(L,X(z.im)),yt=Y(z.top),yb=Y(z.bot),c=z.side==='sup'?'46,189,133':z.side==='res'?'246,70,93':'148,163,184';
+      g.fillStyle='rgba('+c+',.13)';g.fillRect(x0,yt,L+pw-x0,Math.max(2,yb-yt));g.strokeStyle='rgba('+c+',.85)';g.lineWidth=1;g.setLineDash([]);g.beginPath();g.moveTo(x0,yt);g.lineTo(L+pw,yt);g.moveTo(x0,Math.max(yt+2,yb));g.lineTo(L+pw,Math.max(yt+2,yb));g.stroke();
+      g.fillStyle='rgb('+c+')';g.font='10px system-ui';g.textAlign='left';g.fillText('Gövde bölgesi · '+z.n+' tepki · '+(z.side==='sup'?'destek':z.side==='res'?'direnç':'içinde'),x0+4,yt-5);});}
     if(tg.fvg!==false&&this.fvgs){this.fvgs.forEach(f=>{if(f.top<lo||f.bot>hi)return;const x0=Math.max(L,X(f.im)),yt=Y(f.top),yb=Y(f.bot),c=f.side==='up'?'46,189,133':'246,70,93',cs='rgb('+c+')';
       g.fillStyle='rgba('+c+',.14)';g.fillRect(x0,yt,L+pw-x0,Math.max(2,yb-yt));
       g.strokeStyle=cs;g.lineWidth=1;g.setLineDash([2,3]);const yc=Y(f.mid);g.beginPath();g.moveTo(x0,yc);g.lineTo(L+pw,yc);g.stroke();g.setLineDash([]);
@@ -1640,8 +1643,8 @@ window.Chart=Chart;
 const C=window.Chart,fin=Number.isFinite;
 if(!C)return;
 const FIB=[0,0.236,0.382,0.5,0.618,0.786,1,1.272,1.618];
-const COLS=['#38bdf8','#2ebd85','#f6465d','#e0a030','#a855f7','#e6edf3'];
-const DEF={h:{c:'#38bdf8',w:1.5,d:0},tr:{c:'#38bdf8',w:1.6,d:0},fib:{c:'#e0a030',w:1.2,d:0},pos:{c:'#38bdf8',w:1.2,d:0}};
+const COLS=['#94a3b8','#38bdf8','#2ebd85','#f6465d','#e0a030','#a855f7','#e6edf3'];
+const DEF={zone:{c:'#94a3b8',w:1.2,d:0},h:{c:'#38bdf8',w:1.5,d:0},tr:{c:'#38bdf8',w:1.6,d:0},fib:{c:'#e0a030',w:1.2,d:0},pos:{c:'#38bdf8',w:1.2,d:0}};
 const OFF=52;
 function fmt(x){const a=Math.abs(x);return x.toLocaleString('tr-TR',{maximumFractionDigits:a>=1000?2:a>=1?4:a>=0.01?6:8});}
 function segD(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy;let t=l?((px-ax)*dx+(py-ay)*dy)/l:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));}
@@ -1683,7 +1686,7 @@ Object.assign(C.prototype,{
   setBar(v){this.bar=!!v;if(!v){this.tool=null;this.cur=null;this.sel=null;this.wd=null;this.ms=null;}
     this.hint(v?'Bir araç seç ya da bir çizime dokunup düzenle.':'');this.st();this.draw();},
   setTool(t){this.tool=(this.tool===t||!t)?null:t;this.cur=null;this.sel=null;this.wd=null;if(this.tool)this.mx=null;
-    const H={h:'Çizgiyi koymak için dokun.',ms:'Basılı tutup sürükle; ölçüm gösterilir.',tr:'Başlangıçtan bitişe sürükle.',fib:'Dipten tepeye (ya da tersi) sürükle.',long:'Girişi koymak için dokun.',short:'Girişi koymak için dokun.'};
+    const H={h:'Çizgiyi koymak için dokun.',ms:'Basılı tutup sürükle; ölçüm gösterilir.',tr:'Başlangıçtan bitişe sürükle.',zone:'Bölgenin bir köşesinden karşı köşesine sürükle (mıknatıs gövde uçlarına yapışır).',fib:'Dipten tepeye (ya da tersi) sürükle.',long:'Girişi koymak için dokun.',short:'Girişi koymak için dokun.'};
     this.hint(this.tool?H[this.tool]:'Bir araç seç ya da bir çizime dokunup düzenle.');this.st();this.draw();},
   toggleMag(){this.mag=this.mag===false;this.hint(this.mag===false?'Mıknatıs kapalı.':'Mıknatıs açık: noktalar mum fiyatlarına yapışır.');this.st();},
   toggleHide(){this.hideDr=!this.hideDr;this.st();this.draw();},
@@ -1697,7 +1700,7 @@ Object.assign(C.prototype,{
   clearAll(){if(!this.dr.length)return;if(!window.confirm('Bu varlığın tüm çizimleri silinsin mi?'))return;this.pushH(this.snap());this.dr.length=0;this.sel=null;this.commit();},
   /* ---- tutamaçlar ve isabet ---- */
   handlesOf(d){const Y=this.Y,o=[];
-    if(d.k==='tr'||d.k==='fib'){o.push({k:'a',x:this.xT(d.a.t),y:Y(d.a.p)},{k:'b',x:this.xT(d.b.t),y:Y(d.b.p)});}
+    if(d.k==='tr'||d.k==='fib'||d.k==='zone'){o.push({k:'a',x:this.xT(d.a.t),y:Y(d.a.p)},{k:'b',x:this.xT(d.b.t),y:Y(d.b.p)});}
     else if(d.k==='pos'){const xl=this.xT(d.a.t),xr=xl+d.w*this.cw,xm=Math.min((xl+xr)/2,this.L+this.pw-30);
       o.push({k:'a',x:xl,y:Y(d.a.p)},{k:'stop',x:xm,y:Y(d.stop)},{k:'target',x:xm,y:Y(d.target)},{k:'w',x:Math.min(xr,this.L+this.pw-6),y:Y(d.a.p)});}
     return o;},
@@ -1705,6 +1708,7 @@ Object.assign(C.prototype,{
     this.dr.forEach(d=>{let dd=1e9;
       if(d.k==='h')dd=Math.abs(Y(d.p)-y);
       else if(d.k==='tr'){const x1=this.xT(d.a.t),y1=Y(d.a.p),x2=this.xT(d.b.t),y2=Y(d.b.p),sl=(y2-y1)/((x2-x1)||1e-9),ax=Math.min(x1,x2),xe=Math.max(x1,x2,R);dd=segD(x,y,ax,ax===x1?y1:y2,xe,(ax===x1?y1:y2)+sl*(xe-ax));}
+      else if(d.k==='zone'){const x1=this.xT(d.a.t),x2=this.xT(d.b.t),xl=Math.min(x1,x2),y1=Y(d.a.p),y2=Y(d.b.p),yt=Math.min(y1,y2),yb=Math.max(y1,y2);if(x>=xl-6&&x<=R&&y>=yt-6&&y<=yb+6)dd=(y>=yt&&y<=yb)?tol*0.5:Math.min(Math.abs(y-yt),Math.abs(y-yb));}
       else if(d.k==='fib'){const x1=this.xT(d.a.t),x2=this.xT(d.b.t),xl=Math.min(x1,x2);if(x>=xl-8)FIB.forEach(r=>{const v=Math.abs(Y(d.b.p-(d.b.p-d.a.p)*r)-y);if(v<dd)dd=v;});}
       else if(d.k==='pos'){const xl=this.xT(d.a.t),xr=xl+d.w*this.cw,ys=[Y(d.a.p),Y(d.stop),Y(d.target)];if(x>=xl-6&&x<=xr+6&&y>=Math.min(...ys)-4&&y<=Math.max(...ys)+4)dd=tol*0.6;}
       if(dd<bd){bd=dd;best=d;}});
@@ -1778,6 +1782,12 @@ Object.assign(C.prototype,{
         g.setLineDash([]);g.globalAlpha=pre?0.7:1;
         if(!sel){g.fillStyle=s.c;[[x1,y1],[x2,y2]].forEach(q=>{g.beginPath();g.arc(q[0],q[1],2.5,0,7);g.fill();});}
         else{this._tags.push([d.a.p,s.c],[d.b.p,s.c]);const dp=(d.b.p/d.a.p-1)*100;pill((dp>=0?'+':'')+dp.toFixed(2)+'%',(x1+x2)/2,(y1+y2)/2-14,s.c,'#06121c','c');}}
+      else if(d.k==='zone'){const x1=this.xT(d.a.t),x2=this.xT(d.b.t),xl=Math.min(x1,x2),xr=Math.max(x1,x2),y1=Y(d.a.p),y2=Y(d.b.p),yt=Math.min(y1,y2),hh=Math.max(2,Math.abs(y2-y1)),rgb=(()=>{const h=s.c.replace('#','');return parseInt(h.slice(0,2),16)+','+parseInt(h.slice(2,4),16)+','+parseInt(h.slice(4,6),16);})();
+        g.setLineDash([]);g.fillStyle='rgba('+rgb+','+(pre?.12:.2)+')';g.fillRect(xl,yt,xr-xl,hh);
+        if(xr<R){g.fillStyle='rgba('+rgb+',.08)';g.fillRect(xr,yt,R-xr,hh);}
+        g.strokeStyle=s.c;g.lineWidth=sel?s.w+0.6:s.w;g.beginPath();g.moveTo(xl,yt);g.lineTo(R,yt);g.moveTo(xl,yt+hh);g.lineTo(R,yt+hh);g.stroke();
+        const top0=Math.max(d.a.p,d.b.p),bot0=Math.min(d.a.p,d.b.p);this._tags.push([top0,s.c],[bot0,s.c]);
+        if(sel||!pre){g.font='10px system-ui';g.textAlign='left';g.textBaseline='middle';g.fillStyle=s.c;g.fillText('Bölge '+fmtP(bot0)+' – '+fmtP(top0)+'  ('+((top0/bot0-1)*100).toFixed(1)+'%)',Math.max(L+4,xl+4),yt-7);}}
       else if(d.k==='fib'){const x1=this.xT(d.a.t),x2=this.xT(d.b.t),xl=Math.min(x1,x2),P=r=>d.b.p-(d.b.p-d.a.p)*r;
         g.fillStyle=s.c;g.globalAlpha=(pre?0.7:1)*0.11;g.fillRect(xl,Y(P(0.618)),R-xl,Y(P(0.382))-Y(P(0.618)));g.globalAlpha=pre?0.7:1;
         g.font='10px system-ui';g.textAlign='left';g.textBaseline='middle';
@@ -2132,8 +2142,8 @@ function detayHTML(d){
      +'</div></details>';}).join('')+'</details>'
    +'<div class="warn">'+esc(rel.classNote)+'</div></div>';
   cur='chart';
-  const QK=['ema20','ema50','ema200','sr','fvg','vol','rsi'];
-  const T0=[['ema20','EMA20'],['ema50','EMA50'],['ema200','EMA200'],['cross','Golden/Death Cross'],['bb','Bollinger'],['ichi','Ichimoku'],['sr','Destek/Direnç'],['band','Destek/direnç bölgeleri'],['srn','Ekran dışı seviye notu'],['chan','Trend kanalı'],['ob','Emir duvarları'],['gap','CME boşlukları'],['fvg','Adil değer boşluğu (FVG)'],['fib','Fibonacci'],['gann','Gann'],['pivot','Pivot'],['swing','Tepe/Dip'],['pat','Mum formasyonu'],['vol','Hacim'],['delta','Alım/Satım hacmi'],['dcol','Mumları alım/satım baskısına göre boya'],['rsi','RSI'],['macd','MACD'],['stoch','Stokastik']];
+  const QK=['ema20','ema50','ema200','sr','fvg','bz','vol','rsi'];
+  const T0=[['ema20','EMA20'],['ema50','EMA50'],['ema200','EMA200'],['cross','Golden/Death Cross'],['bb','Bollinger'],['ichi','Ichimoku'],['sr','Destek/Direnç'],['band','Destek/direnç bölgeleri'],['srn','Ekran dışı seviye notu'],['chan','Trend kanalı'],['ob','Emir duvarları'],['gap','CME boşlukları'],['fvg','Adil değer boşluğu (FVG)'],['bz','Mum gövdesi bölgeleri'],['fib','Fibonacci'],['gann','Gann'],['pivot','Pivot'],['swing','Tepe/Dip'],['pat','Mum formasyonu'],['vol','Hacim'],['delta','Alım/Satım hacmi'],['dcol','Mumları alım/satım baskısına göre boya'],['rsi','RSI'],['macd','MACD'],['stoch','Stokastik']];
   H[cur]+='<div class="card charts'+(S.pin&&!S.fs?' pinned':'')+(S.fs?' fs'+(S.rot?' rot':''):'')+'" id="chcard"><h2>Grafik <span class="note">sürükle: her yöne kaydır · tekerlek: zaman yakınlaştır · fiyat eksenine sürükle / Shift+tekerlek: fiyat yakınlaştır · çift tık: otomatik ölçek</span><span class="chbtns"><button type="button" id="vzp" title="Fiyat ekseni: yakınlaştır">↕＋</button><button type="button" id="vzm" title="Fiyat ekseni: uzaklaştır">↕－</button><button type="button" id="vza" title="Otomatik ölçeğe dön">⟲</button><button type="button" id="tzp" title="Zaman ekseni: yakınlaştır (daha az mum)">↔＋</button><button type="button" id="tzm" title="Zaman ekseni: uzaklaştır (daha çok mum)">↔－</button><span class="fstf">'+TFS.map(([k,n])=>'<button type="button" data-ftf="'+k+'" class="'+(k===S.tf?'on':'')+'">'+n+'</button>').join('')+'</span><button type="button" id="fsb" title="Tam ekran (telefonda yan döner)">'+(S.fs?'✕ Kapat':'⛶ Tam ekran')+'</button><button type="button" id="drb" title="Çizim ve ölçüm araçları">✏️ Çiz</button><button type="button" class="pinb'+(S.pin?' on':'')+'" id="pinb">'+(S.pin?'📌 Sabit':'📍 Sabitle')+'</button></span></h2><div class="drbar" id="drbar" style="display:none"><div class="drtools">'+DRBAR+'</div><div class="drsel" id="drsel"></div></div><details class="lay"><summary>Katmanlar ve ayarlar</summary><div class="laybody"><div class="lvsel"><span class="note">Destek/direnç sayısı:</span><span class="nlsel">'+lvSelBtns(lvMode())+'</span></div><div class="lvsel"><span class="note">Seviye dilimleri:</span><span class="tfwrap">'+lvTfBtns()+'</span></div><div class="chk">'+T0.filter(x=>QK.includes(x[0])).map(([k,n])=>'<label><input type="checkbox" data-tg="'+k+'" '+(S.tg[k]?'checked':'')+'>'+n+'</label>').join('')+'</div><details class="adv"><summary>Gelişmiş katmanlar</summary><div class="chk">'+T0.filter(x=>!QK.includes(x[0])).map(([k,n])=>'<label><input type="checkbox" data-tg="'+k+'" '+(S.tg[k]?'checked':'')+'>'+n+'</label>').join('')+'</div></details><div class="chbtns set"><button type="button" id="frb" title="Açıkken grafiğe dokunup her yöne sürükleyebilirsin; kapalıyken yukarı-aşağı sürükleme sayfayı kaydırır">'+((window.Chart&&Chart.free===false)?'✋ Serbest: kapalı':'✋ Serbest: açık')+'</button><button type="button" id="axm" title="Fiyat sütununu daralt">◀ Sütun</button><button type="button" id="axp" title="Fiyat sütununu genişlet">Sütun ▶</button></div></div></details><canvas id="cv"></canvas>'+(isFinite(d.cands[d.cands.length-1].tb)?'':'<div class="note">Bu veri kaynağında alım/satım hacmi ayrımı yok; “Alım/Satım hacmi” ve boyama seçenekleri çalışmaz (Binance verisinde çalışır).</div>')+'</div>';
   cur='emir';
   H[cur]+=(S.mk==='fut'?futHTML():obHTML());
@@ -2715,6 +2725,23 @@ function fvgScan(cs){
   return {list,open:list.filter(f=>f.fillI<0),stats};
 }
 function fvgOf(d){if(!d||!d.cands)return {list:[],open:[],stats:null};if(!d.fvg){try{d.fvg=fvgScan(d.cands);}catch(e){console.error('fvg',e);d.fvg={list:[],open:[],stats:null};}}return d.fvg;}
+function bodyZones(d,price){
+  try{const cs=d.cands,N=cs.length;if(N<30)return [];
+    const atr=(d.A&&d.A.lastATR)||price*0.02,tol=Math.max(0.5*atr,price*0.004),K=3,pts=[];
+    const tp=i=>Math.max(cs[i].o,cs[i].c),bt=i=>Math.min(cs[i].o,cs[i].c);
+    for(let i=K;i<N-K;i++){let hi=true,lo=true;for(let j=i-K;j<=i+K;j++){if(j===i)continue;if(tp(j)>tp(i))hi=false;if(bt(j)<bt(i))lo=false;}
+      if(hi)pts.push({v:tp(i),i});if(lo)pts.push({v:bt(i),i});}
+    pts.sort((a,b)=>a.v-b.v);
+    const groups=[];let cur=null;
+    pts.forEach(p=>{if(cur&&p.v-cur.max<=tol&&p.v-cur.min<=2*tol){cur.max=p.v;cur.m.push(p);}else{cur={min:p.v,max:p.v,m:[p]};groups.push(cur);}});
+    const out=[];
+    groups.forEach(g=>{const idx=g.m.map(x=>x.i).sort((a,b)=>a-b),sep=[];idx.forEach(i=>{if(!sep.length||i-sep[sep.length-1]>=5)sep.push(i);});
+      if(sep.length<2)return;let top=g.max,bot=g.min;if(top-bot<0.15*tol){top+=0.15*tol;bot-=0.15*tol;}
+      const mid=(top+bot)/2;if(Math.abs(mid/price-1)>0.4)return;
+      out.push({top,bot,mid,n:sep.length,im:sep[0],last:sep[sep.length-1],side:price>top?'sup':price<bot?'res':'in'});});
+    return out.sort((a,b)=>Math.abs(a.mid-price)-Math.abs(b.mid-price)).slice(0,4);
+  }catch(e){return [];}
+}
 function fvgNear(d,price,lim){return fvgOf(d).open.filter(f=>Math.abs(f.mid/price-1)<=0.3).sort((a,b)=>Math.abs(a.mid-price)-Math.abs(b.mid-price)).slice(0,lim||8);}
 function fvgYorum(d,price){
   const F=fvgOf(d),op=F.open.filter(f=>Math.abs(f.mid/price-1)<=0.3).sort((a,b)=>Math.abs(a.mid-price)-Math.abs(b.mid-price));
@@ -2889,7 +2916,7 @@ function render(){
     const k=e.target.dataset&&e.target.dataset.tg;if(k){S.tg[k]=e.target.checked;saveTg();if(chart)chart.draw();}
   };
   if(S.tab==='vade')drawCot();
-  if(S.tab==='detay'){const d=S.data[S.tf];chart=null;if(d&&d.A){if($('#cv')){chart=new Chart($('#cv'),d.A,d.cands,d.tf,S.tg);chart.compact=S.pin;chart.lvN=lvMode();chart.lvAll=S.lvList||null;chart.fvgs=fvgNear(d,d.A.price,4);chart.fs=!!S.fs;chart.rot=!!S.rot;chart.setTouch();chart.ob=obChart();chart.gaps=(S.gaps&&S.gaps.list)||null;drWire(chart);chart.draw();}afterTab();}}
+  if(S.tab==='detay'){const d=S.data[S.tf];chart=null;if(d&&d.A){if($('#cv')){chart=new Chart($('#cv'),d.A,d.cands,d.tf,S.tg);chart.compact=S.pin;chart.lvN=lvMode();chart.lvAll=S.lvList||null;chart.fvgs=fvgNear(d,d.A.price,4);chart.bzs=bodyZones(d,d.A.price);chart.fs=!!S.fs;chart.rot=!!S.rot;chart.setTouch();chart.ob=obChart();chart.gaps=(S.gaps&&S.gaps.list)||null;drWire(chart);chart.draw();}afterTab();}}
   navSync();
 }
 const setHH=()=>{const h=document.querySelector('header');document.documentElement.style.setProperty('--hh',(h&&getComputedStyle(h).position==='sticky'?h.offsetHeight:0)+'px');};setHH();try{new ResizeObserver(()=>{setHH();if(chart&&$('#cv'))chart.draw();}).observe(document.querySelector('header'));}catch(e){}
@@ -3248,6 +3275,7 @@ const DRI={
  sel:SV('<path d="M5 3l13 8-6 1.8L9.5 19z"/>'),
  ms:SV('<path d="M3 17L17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/>'),
  h:SV('<path d="M3 12h18"/>','<circle cx="12" cy="12" r="2" fill="currentColor"/>'),
+ zone:SV('<rect x="3" y="8" width="18" height="8" rx="1" fill="currentColor" fill-opacity=".25"/>'),
  tr:SV('<path d="M4 19L20 5"/>','<circle cx="4" cy="19" r="2" fill="currentColor"/><circle cx="20" cy="5" r="2" fill="currentColor"/>'),
  fib:SV('<path d="M3 5h18M3 10h18M3 15h18M3 20h18" stroke-opacity=".75"/><path d="M5 20L19 5" stroke-dasharray="2 2"/>'),
  long:SV('<rect x="4" y="4" width="16" height="16" rx="2" stroke-opacity=".6"/><path d="M12 17V8M8.5 11.5L12 8l3.5 3.5" stroke="#2ebd85"/>'),
@@ -3259,7 +3287,7 @@ const DRI={
  clear:SV('<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'),
  close:SV('<path d="M6 6l12 12M18 6L6 18"/>')
 };
-const DRT=[['sel','Seç / düzenle'],['ms','Ölçüm'],['h','Yatay çizgi'],['tr','Trend çizgisi'],['fib','Fibonacci'],['long','Long pozisyon'],['short','Short pozisyon'],['|'],['mag','Mıknatıs: mum fiyatlarına yapış'],['undo','Geri al'],['redo','İleri al'],['hide','Çizimleri gizle / göster'],['clear','Hepsini sil'],['close','Kapat']];
+const DRT=[['sel','Seç / düzenle'],['ms','Ölçüm'],['h','Yatay çizgi'],['tr','Trend çizgisi'],['zone','Bölge (dikdörtgen)'],['fib','Fibonacci'],['long','Long pozisyon'],['short','Short pozisyon'],['|'],['mag','Mıknatıs: mum fiyatlarına yapış'],['undo','Geri al'],['redo','İleri al'],['hide','Çizimleri gizle / göster'],['clear','Hepsini sil'],['close','Kapat']];
 const DRBAR=DRT.map(x=>x[0]==='|'?'<span class="drsp"></span>':'<button type="button" class="ib" data-dr="'+x[0]+'" title="'+x[1]+'" aria-label="'+x[1]+'">'+DRI[x[0]]+'</button>').join('');
 function drWire(ch){
   const key=S.sym+'/'+S.quote;ch.dr=S.dr[key]||(S.dr[key]=[]);ch.H=S.drH[key]||(S.drH[key]={u:[],r:[]});
