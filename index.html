@@ -400,7 +400,7 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 50 · bölge aracı + gövde bölgeleri katmanı</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 52 · gövde bölgeleri daraltıldı</small></footer>
 </main>
 <nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="vade"><i>🧭</i>Yön</button><button data-v="neden"><i>📊</i>Neden</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="plan"><i>🛡️</i>Plan</button><button data-v="daha"><i>⋯</i>Daha</button></nav>
 <div id="sbar" style="display:none"></div>
@@ -1941,6 +1941,13 @@ async function cgPts(url,pick){
 }
 function nearPt(a,t,tol){let lo=0,hi=a.length-1;while(lo<hi){const m=(lo+hi)>>1;if(a[m][0]<t)lo=m+1;else hi=m;}
   let b=a[lo];if(lo>0&&Math.abs(a[lo-1][0]-t)<Math.abs(b[0]-t))b=a[lo-1];return Math.abs(b[0]-t)<=tol?b[1]:NaN;}
+let spotBan=0;
+async function sget(url,ms){
+  if(Date.now()<spotBan)throw new Error('HTTP 418');
+  const r=await tmo(fetch(url),ms);
+  if(r.status===418||r.status===429){let ra=120;try{ra=+r.headers.get('retry-after')||120;}catch(e){}spotBan=Date.now()+Math.min(ra,900)*1000;}
+  return r;
+}
 async function klinesIdx(sym,tf,limit){
   const hourly=tf==='1h'||tf==='4h',daily=tf==='1d'||tf==='1w'||tf==='1M'||tf==='1Y';
   if(!hourly&&!daily)throw new Error('Piyasa endekslerinde yalnızca 1 sa, 4 sa, Günlük, Haftalık, Aylık zaman dilimleri var (veri kaynağı bu kadar ayrıntı veriyor).');
@@ -1989,7 +1996,7 @@ async function klines0(sym,quote,tf,limit){
     try{let all=[],end=null;
       while(all.length<limit){
         const n=Math.min(1000,limit-all.length);
-        const r=await tmo(fetch(host+'/api/v3/klines?symbol='+pair+'&interval='+tf+'&limit='+n+(end?'&endTime='+end:'')),12000);
+        const r=await sget(host+'/api/v3/klines?symbol='+pair+'&interval='+tf+'&limit='+n+(end?'&endTime='+end:''),12000);
         if(r.status===400)throw new Error('YOK');
         if(!r.ok)throw new Error('HTTP '+r.status);
         const j=await r.json();if(!Array.isArray(j))throw new Error('beklenmeyen yanıt');
@@ -2004,6 +2011,7 @@ async function klines0(sym,quote,tf,limit){
     const j=await r.json();if(j.retCode!==0||!j.result||!j.result.list||!j.result.list.length)throw new Error('yok');
     return j.result.list.map(k=>({t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4],v:+k[5],tb:NaN})).reverse();
   }catch(e){errs.push('Bybit '+e.message);}
+  if(errs.some(e=>/HTTP 4(18|29)/.test(e)))throw new Error('Binance, bu internet bağlantısından gelen istekleri geçici olarak engelledi (HTTP '+(errs.some(e=>/418/.test(e))?'418':'429')+') ve Bybit’te bu çift yok. Birkaç dakika bekleyip tekrar dene; engel kalkınca kendiliğinden çalışır.');
   throw new Error('Veri alınamadı ('+errs.join(', ')+'). İnternet bağlantını ve VPN/güvenlik duvarını kontrol et; Binance bazı ülkelerde/ağlarda engelli olabilir.');
 }
 async function klinesFut0(sym,quote,tf,limit){
@@ -2487,7 +2495,7 @@ document.addEventListener('DOMContentLoaded',()=>{const nv=$('#bnav');if(nv)nv.a
 async function fetchDepth(sym,quote){
   const pair=sym+quote,errs=[];
   for(const host of ['https://data-api.binance.vision','https://api.binance.com']){
-    try{const r=await tmo(fetch(host+'/api/v3/depth?symbol='+pair+'&limit=5000'),12000);if(!r.ok)throw new Error('HTTP '+r.status);
+    try{const r=await sget(host+'/api/v3/depth?symbol='+pair+'&limit=1000',12000);if(!r.ok)throw new Error('HTTP '+r.status);
       const j=await r.json();if(!j.bids||!j.asks||!j.bids.length||!j.asks.length)throw new Error('boş');
       return analyzeDepth(j.bids.map(x=>[+x[0],+x[1]]),j.asks.map(x=>[+x[0],+x[1]]));}catch(e){errs.push(e.message);}
   }
@@ -2527,7 +2535,7 @@ function obHTML(){
   const d=S.depth;
   if(!d)return '<div class="card" id="obcard"><h2>Emir defteri'+info('ob')+'</h2><div class="note">Yakın emir defteri alınamadı; otomatik olarak yeniden denenecek.</div>'+wideHTML()+'</div>';
   const tb=(w,c)=>w.length?w.map(x=>'<div class="lv"><span class="'+c+'">'+P(x.p)+' <span class="note">('+(x.dist>0?'+':'')+x.dist.toFixed(2)+'%)</span></span><b>'+x.lab+' '+S.quote+'</b></div>').join(''):'<div class="note">Belirgin duvar yok</div>';
-  return '<div class="card" id="obcard"><h2>Emir defteri'+info('ob')+' <span class="note">canlı · her 5 sn güncellenir · son: <span id="obtime">'+new Date(d.t).toLocaleTimeString('tr-TR')+'</span> · fiyatın ±%'+d.covPct.toFixed(1)+' çevresi</span></h2>'
+  return '<div class="card" id="obcard"><h2>Emir defteri'+info('ob')+' <span class="note">canlı · her 15 sn güncellenir · son: <span id="obtime">'+new Date(d.t).toLocaleTimeString('tr-TR')+'</span> · fiyatın ±%'+d.covPct.toFixed(1)+' çevresi</span></h2>'
    +obSummary(d)
    +'<canvas id="dcv" style="width:100%;height:170px;display:block;margin:10px 0;background:var(--bg);border-radius:8px"></canvas>'
    +'<div class="grid2"><div><div class="sub2">Alış duvarları (destek adayı)</div>'+tb(d.bw.slice().sort((x,y)=>y.p-x.p),'bull')+'</div><div><div class="sub2">Satış duvarları (direnç adayı)</div>'+tb(d.aw.slice().sort((x,y)=>x.p-y.p),'bear')+'</div></div>'
@@ -2593,7 +2601,7 @@ async function obTick(){
     else{const el=$('#obsum');if(el)el.outerHTML=obVadeCard();}
   }finally{obBusy=false;}
 }
-setInterval(obTick,5000);
+setInterval(obTick,15000);
 
 /* ---------- CFTC kurumsal pozisyonlar (haftalık) ---------- */
 const COT={BTC:{code:'133741',unit:5,name:'CME Bitcoin vadelisi'},ETH:{code:'146021',unit:50,name:'CME Ether vadelisi'},SOL:{code:'177741',unit:0,name:'CME Solana vadelisi'},XRP:{code:'176740',unit:0,name:'CME XRP vadelisi'}};
@@ -2727,13 +2735,13 @@ function fvgScan(cs){
 function fvgOf(d){if(!d||!d.cands)return {list:[],open:[],stats:null};if(!d.fvg){try{d.fvg=fvgScan(d.cands);}catch(e){console.error('fvg',e);d.fvg={list:[],open:[],stats:null};}}return d.fvg;}
 function bodyZones(d,price){
   try{const cs=d.cands,N=cs.length;if(N<30)return [];
-    const atr=(d.A&&d.A.lastATR)||price*0.02,tol=Math.max(0.5*atr,price*0.004),K=3,pts=[];
+    const atr=(d.A&&d.A.lastATR)||price*0.02,tol=Math.max(price*0.0015,Math.min(0.15*atr,price*0.006)),K=3,pts=[];
     const tp=i=>Math.max(cs[i].o,cs[i].c),bt=i=>Math.min(cs[i].o,cs[i].c);
     for(let i=K;i<N-K;i++){let hi=true,lo=true;for(let j=i-K;j<=i+K;j++){if(j===i)continue;if(tp(j)>tp(i))hi=false;if(bt(j)<bt(i))lo=false;}
       if(hi)pts.push({v:tp(i),i});if(lo)pts.push({v:bt(i),i});}
     pts.sort((a,b)=>a.v-b.v);
     const groups=[];let cur=null;
-    pts.forEach(p=>{if(cur&&p.v-cur.max<=tol&&p.v-cur.min<=2*tol){cur.max=p.v;cur.m.push(p);}else{cur={min:p.v,max:p.v,m:[p]};groups.push(cur);}});
+    pts.forEach(p=>{if(cur&&p.v-cur.max<=tol*0.6&&p.v-cur.min<=tol){cur.max=p.v;cur.m.push(p);}else{cur={min:p.v,max:p.v,m:[p]};groups.push(cur);}});
     const out=[];
     groups.forEach(g=>{const idx=g.m.map(x=>x.i).sort((a,b)=>a-b),sep=[];idx.forEach(i=>{if(!sep.length||i-sep[sep.length-1]>=5)sep.push(i);});
       if(sep.length<2)return;let top=g.max,bot=g.min;if(top-bot<0.15*tol){top+=0.15*tol;bot-=0.15*tol;}
@@ -3098,7 +3106,7 @@ let mtT=0;function mt(x){let e=document.getElementById('mt');if(!e){e=document.c
 function toast(html){const t=document.createElement('div');t.className='toast';t.innerHTML=html;$('#toasts').appendChild(t);t.onclick=()=>t.remove();setTimeout(()=>t.remove(),30000);}
 async function spot(sym,quote){
   for(const host of ['https://data-api.binance.vision','https://api.binance.com']){
-    try{const r=await tmo(fetch(host+'/api/v3/ticker/price?symbol='+sym+quote),8000);if(!r.ok)continue;const j=await r.json();if(+j.price>0)return +j.price;}catch(e){}
+    try{const r=await sget(host+'/api/v3/ticker/price?symbol='+sym+quote,8000);if(!r.ok)continue;const j=await r.json();if(+j.price>0)return +j.price;}catch(e){}
   }
   throw new Error('fiyat yok');
 }
@@ -3146,7 +3154,7 @@ function alRefresh(){const el=$('#allist');if(el)el.innerHTML=alListHTML();bellS
 /* ---- anlık fiyat ---- */
 async function tick24(sym,quote){
   for(const host of ['https://data-api.binance.vision','https://api.binance.com']){
-    try{const r=await tmo(fetch(host+'/api/v3/ticker/24hr?symbol='+sym+quote),6000);if(!r.ok)continue;const j=await r.json();if(+j.lastPrice>0)return {p:+j.lastPrice,chg:+j.priceChangePercent};}catch(e){}
+    try{const r=await sget(host+'/api/v3/ticker/24hr?symbol='+sym+quote,6000);if(!r.ok)continue;const j=await r.json();if(+j.lastPrice>0)return {p:+j.lastPrice,chg:+j.priceChangePercent};}catch(e){}
   }
   const r=await tmo(fetch('https://api.bybit.com/v5/market/tickers?category=spot&symbol='+sym+quote),6000);const j=await r.json();const t=j.result&&j.result.list&&j.result.list[0];
   if(!t)throw new Error('fiyat yok');return {p:+t.lastPrice,chg:+t.price24hPcnt*100};
