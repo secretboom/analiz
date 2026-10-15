@@ -400,7 +400,7 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 53 · karşıt mum (arz/talep) bölgeleri</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 54 · taban (konsolidasyon) bölgeleri</small></footer>
 </main>
 <nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="vade"><i>🧭</i>Yön</button><button data-v="neden"><i>📊</i>Neden</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="plan"><i>🛡️</i>Plan</button><button data-v="daha"><i>⋯</i>Daha</button></nav>
 <div id="sbar" style="display:none"></div>
@@ -1556,7 +1556,7 @@ class Chart{
       g.fillStyle='#a855f7';g.font='10px system-ui';g.textAlign='left';g.fillText('CME boşluğu %'+Math.abs(q.gp).toFixed(1),x0+4,yc-6);if(q.close>=lo&&q.close<=hi)labels.push([q.close,'#a855f7','CME']);});}
     if(tg.ob&&this.obs){this.obs.forEach(z=>{if(z.top<lo||z.bot>hi)return;const x0=Math.max(L,X(z.i)),yt=Y(z.top),yb=Y(z.bot),c=z.side==='sup'?'46,189,133':'246,70,93';
       g.fillStyle='rgba('+c+',.16)';g.fillRect(x0,yt,L+pw-x0,Math.max(2,yb-yt));g.strokeStyle='rgba('+c+',.9)';g.lineWidth=1;g.setLineDash([]);g.beginPath();g.moveTo(x0,yt);g.lineTo(L+pw,yt);g.moveTo(x0,Math.max(yt+2,yb));g.lineTo(L+pw,Math.max(yt+2,yb));g.stroke();
-      g.fillStyle='rgb('+c+')';g.font='10px system-ui';g.textAlign='left';g.fillText((z.side==='sup'?'Talep':'Arz')+' bölgesi · '+z.tests+' test',x0+4,yt-5);});}
+      g.fillStyle='rgb('+c+')';g.font='10px system-ui';g.textAlign='left';g.fillText((z.side==='sup'?'Talep':'Arz')+' tabanı · '+z.n+' mum · '+z.tests+' test',x0+4,yt-5);});}
     if(tg.fvg!==false&&this.fvgs){this.fvgs.forEach(f=>{if(f.top<lo||f.bot>hi)return;const x0=Math.max(L,X(f.im)),yt=Y(f.top),yb=Y(f.bot),c=f.side==='up'?'46,189,133':'246,70,93',cs='rgb('+c+')';
       g.fillStyle='rgba('+c+',.14)';g.fillRect(x0,yt,L+pw-x0,Math.max(2,yb-yt));
       g.strokeStyle=cs;g.lineWidth=1;g.setLineDash([2,3]);const yc=Y(f.mid);g.beginPath();g.moveTo(x0,yc);g.lineTo(L+pw,yc);g.stroke();g.setLineDash([]);
@@ -2151,7 +2151,7 @@ function detayHTML(d){
    +'<div class="warn">'+esc(rel.classNote)+'</div></div>';
   cur='chart';
   const QK=['ema20','ema50','ema200','sr','fvg','ob','vol','rsi'];
-  const T0=[['ema20','EMA20'],['ema50','EMA50'],['ema200','EMA200'],['cross','Golden/Death Cross'],['bb','Bollinger'],['ichi','Ichimoku'],['sr','Destek/Direnç'],['band','Destek/direnç bölgeleri'],['srn','Ekran dışı seviye notu'],['chan','Trend kanalı'],['ob','Emir duvarları'],['gap','CME boşlukları'],['fvg','Adil değer boşluğu (FVG)'],['ob','Karşıt mum bölgeleri (arz/talep)'],['fib','Fibonacci'],['gann','Gann'],['pivot','Pivot'],['swing','Tepe/Dip'],['pat','Mum formasyonu'],['vol','Hacim'],['delta','Alım/Satım hacmi'],['dcol','Mumları alım/satım baskısına göre boya'],['rsi','RSI'],['macd','MACD'],['stoch','Stokastik']];
+  const T0=[['ema20','EMA20'],['ema50','EMA50'],['ema200','EMA200'],['cross','Golden/Death Cross'],['bb','Bollinger'],['ichi','Ichimoku'],['sr','Destek/Direnç'],['band','Destek/direnç bölgeleri'],['srn','Ekran dışı seviye notu'],['chan','Trend kanalı'],['ob','Emir duvarları'],['gap','CME boşlukları'],['fvg','Adil değer boşluğu (FVG)'],['ob','Taban bölgeleri (arz/talep)'],['fib','Fibonacci'],['gann','Gann'],['pivot','Pivot'],['swing','Tepe/Dip'],['pat','Mum formasyonu'],['vol','Hacim'],['delta','Alım/Satım hacmi'],['dcol','Mumları alım/satım baskısına göre boya'],['rsi','RSI'],['macd','MACD'],['stoch','Stokastik']];
   H[cur]+='<div class="card charts'+(S.pin&&!S.fs?' pinned':'')+(S.fs?' fs'+(S.rot?' rot':''):'')+'" id="chcard"><h2>Grafik <span class="note">sürükle: her yöne kaydır · tekerlek: zaman yakınlaştır · fiyat eksenine sürükle / Shift+tekerlek: fiyat yakınlaştır · çift tık: otomatik ölçek</span><span class="chbtns"><button type="button" id="vzp" title="Fiyat ekseni: yakınlaştır">↕＋</button><button type="button" id="vzm" title="Fiyat ekseni: uzaklaştır">↕－</button><button type="button" id="vza" title="Otomatik ölçeğe dön">⟲</button><button type="button" id="tzp" title="Zaman ekseni: yakınlaştır (daha az mum)">↔＋</button><button type="button" id="tzm" title="Zaman ekseni: uzaklaştır (daha çok mum)">↔－</button><span class="fstf">'+TFS.map(([k,n])=>'<button type="button" data-ftf="'+k+'" class="'+(k===S.tf?'on':'')+'">'+n+'</button>').join('')+'</span><button type="button" id="fsb" title="Tam ekran (telefonda yan döner)">'+(S.fs?'✕ Kapat':'⛶ Tam ekran')+'</button><button type="button" id="drb" title="Çizim ve ölçüm araçları">✏️ Çiz</button><button type="button" class="pinb'+(S.pin?' on':'')+'" id="pinb">'+(S.pin?'📌 Sabit':'📍 Sabitle')+'</button></span></h2><div class="drbar" id="drbar" style="display:none"><div class="drtools">'+DRBAR+'</div><div class="drsel" id="drsel"></div></div><details class="lay"><summary>Katmanlar ve ayarlar</summary><div class="laybody"><div class="lvsel"><span class="note">Destek/direnç sayısı:</span><span class="nlsel">'+lvSelBtns(lvMode())+'</span></div><div class="lvsel"><span class="note">Seviye dilimleri:</span><span class="tfwrap">'+lvTfBtns()+'</span></div><div class="chk">'+T0.filter(x=>QK.includes(x[0])).map(([k,n])=>'<label><input type="checkbox" data-tg="'+k+'" '+(S.tg[k]?'checked':'')+'>'+n+'</label>').join('')+'</div><details class="adv"><summary>Gelişmiş katmanlar</summary><div class="chk">'+T0.filter(x=>!QK.includes(x[0])).map(([k,n])=>'<label><input type="checkbox" data-tg="'+k+'" '+(S.tg[k]?'checked':'')+'>'+n+'</label>').join('')+'</div></details><div class="chbtns set"><button type="button" id="frb" title="Açıkken grafiğe dokunup her yöne sürükleyebilirsin; kapalıyken yukarı-aşağı sürükleme sayfayı kaydırır">'+((window.Chart&&Chart.free===false)?'✋ Serbest: kapalı':'✋ Serbest: açık')+'</button><button type="button" id="axm" title="Fiyat sütununu daralt">◀ Sütun</button><button type="button" id="axp" title="Fiyat sütununu genişlet">Sütun ▶</button></div></div></details><canvas id="cv"></canvas>'+(isFinite(d.cands[d.cands.length-1].tb)?'':'<div class="note">Bu veri kaynağında alım/satım hacmi ayrımı yok; “Alım/Satım hacmi” ve boyama seçenekleri çalışmaz (Binance verisinde çalışır).</div>')+'</div>';
   cur='emir';
   H[cur]+=(S.mk==='fut'?futHTML():obHTML());
@@ -2734,27 +2734,32 @@ function fvgScan(cs){
 }
 function fvgOf(d){if(!d||!d.cands)return {list:[],open:[],stats:null};if(!d.fvg){try{d.fvg=fvgScan(d.cands);}catch(e){console.error('fvg',e);d.fvg={list:[],open:[],stats:null};}}return d.fvg;}
 function opZones(d,price){
-  try{const cs=d.cands,N=cs.length;if(N<30)return [];
-    const atr=(d.A&&d.A.lastATR)||price*0.02,maxR=1.6*atr,K=3,F=4,out=[];
-    const up=i=>cs[i].c>=cs[i].o,rg=i=>cs[i].h-cs[i].l;
-    for(let i=3;i<N-1;i++){
-      const r=rg(i);if(!(r>0)||r>maxR)continue;
-      const prevUp=[1,2,3].filter(k=>up(i-k)).length,prevDn=3-prevUp;
-      let side=null,why='';
-      if(!up(i)&&prevUp>=2){let ok=false;for(let j=i+1;j<=Math.min(N-1,i+F);j++)if(cs[j].c>cs[i].h){ok=true;break;}if(ok){side='sup';why='yükselişte geri çekilme mumu';}}
-      else if(up(i)&&prevDn>=2){let ok=false;for(let j=i+1;j<=Math.min(N-1,i+F);j++)if(cs[j].c<cs[i].l){ok=true;break;}if(ok){side='res';why='düşüşte tepki mumu';}}
-      if(!side&&i>=K&&i<N-K){let lo=true,hi=true;for(let j=i-K;j<=i+K;j++){if(j===i)continue;if(cs[j].l<cs[i].l)lo=false;if(cs[j].h>cs[i].h)hi=false;}
-        if(lo){side='sup';why='dip dönüş mumu';}else if(hi){side='res';why='tepe dönüş mumu';}}
-      if(!side)continue;
-      const top=cs[i].h,bot=cs[i].l;let broken=false,tests=0,inz=false;
-      for(let j=i+(side==='sup'?2:2);j<N;j++){
-        if(side==='sup'&&cs[j].c<bot){broken=true;break;}if(side==='res'&&cs[j].c>top){broken=true;break;}
-        const t=side==='sup'?cs[j].l<=top&&cs[j].c>=bot:cs[j].h>=bot&&cs[j].c<=top;
+  try{const cs=d.cands,N=cs.length;if(N<40)return [];
+    const rg=i=>cs[i].h-cs[i].l,bd=i=>Math.abs(cs[i].c-cs[i].o),upc=i=>cs[i].c>=cs[i].o;
+    const ar=new Array(N).fill(0);for(let i=0;i<N;i++){const w=[];for(let k=Math.max(0,i-20);k<i;k++)w.push(rg(k));w.sort((x,y)=>x-y);ar[i]=w.length?w[w.length>>1]:rg(i);}
+    const out=[];
+    for(let j=4;j<N;j++){
+      const A=ar[j];if(!(A>0))continue;
+      const dir=upc(j)?1:-1;if(bd(j)<1.2*A)continue;            // güçlü hareket mumu
+      let k=j-1,lo=Infinity,hi=-Infinity,cnt=0,opp=0;
+      while(k>=0&&cnt<9&&bd(k)<=0.65*A&&rg(k)<=1.4*A){
+        const bt=Math.max(cs[k].o,cs[k].c),bb=Math.min(cs[k].o,cs[k].c);
+        const nh=Math.max(hi,Math.min(cs[k].h,bt+0.5*A)),nl=Math.min(lo,Math.max(cs[k].l,bb-0.5*A));
+        if(cnt>=2&&nh-nl>1.8*A)break;
+        hi=nh;lo=nl;
+        if(upc(k)!==(dir>0))opp++;cnt++;k--;}
+      if(cnt<3||opp<1)continue;
+      if(dir>0&&!(cs[j].c>hi))continue;if(dir<0&&!(cs[j].c<lo))continue;
+      if(hi-lo>2.6*A)continue;
+      const side=dir>0?'sup':'res',i0=j-cnt;let broken=false,tests=0,inz=false;
+      for(let m=j+1;m<N;m++){
+        if(side==='sup'&&cs[m].c<lo){broken=true;break;}if(side==='res'&&cs[m].c>hi){broken=true;break;}
+        const t=side==='sup'?cs[m].l<=hi:cs[m].h>=lo;
         if(t&&!inz){tests++;inz=true;}else if(!t)inz=false;}
       if(broken)continue;
-      out.push({top,bot,mid:(top+bot)/2,i,tests,side,why});}
-    const pick=[];out.sort((x,y)=>Math.abs(x.mid-price)-Math.abs(y.mid-price));
-    for(const z of out){if(Math.abs(z.mid/price-1)>0.4)continue;if(pick.some(p=>z.bot<p.top&&z.top>p.bot))continue;pick.push(z);if(pick.length>=4)break;}
+      out.push({top:hi,bot:lo,mid:(hi+lo)/2,i:i0,j,tests,side,n:cnt});}
+    out.sort((x,y)=>Math.abs(x.mid-price)-Math.abs(y.mid-price));
+    const pick=[];for(const z of out){if(Math.abs(z.mid/price-1)>0.6)continue;if(pick.some(p=>z.bot<p.top&&z.top>p.bot))continue;pick.push(z);if(pick.length>=5)break;}
     return pick;
   }catch(e){return [];}
 }
