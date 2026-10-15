@@ -400,9 +400,9 @@ i.tfc{font-style:normal;display:inline-block;border-radius:4px;padding:0 5px;mar
 <div id="wl" class="wl" style="display:none"></div>
 <div id="status">Bir varlığın adını yaz (örn. <b>bitcoin</b>, <b>ETH</b>, <b>solana</b>), listeden seç ya da yazıp Enter’a bas; analiz otomatik başlar. Tüm hesaplar seçtiğin zaman dilimi için yapılır.</div>
 <div id="out" class="hide"></div>
-<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 48 · düzen: Seviyeler sekmesinde grafik, Daha fazla yeniden sıralandı</small></footer>
+<footer>Bu araç eğitim/bilgi amaçlıdır, yatırım tavsiyesi değildir. Gösterge sinyalleri geçmişte kâr garantisi vermez. Veri: Binance (yedek: Bybit). Kripto varlıklar desteklenir.<br><small id="ver">Sürüm 49 · yeni akış: Grafik › Yön › Neden › Seviyeler › Plan › Daha</small></footer>
 </main>
-<nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="analiz"><i>📊</i>Analiz</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="vade"><i>🧭</i>Vadeler</button><button data-v="daha"><i>⋯</i>Daha fazla</button></nav>
+<nav id="bnav" style="display:none"><button data-v="grafik" class="on"><i>📈</i>Grafik</button><button data-v="vade"><i>🧭</i>Yön</button><button data-v="neden"><i>📊</i>Neden</button><button data-v="seviye"><i>🎯</i>Seviyeler</button><button data-v="plan"><i>🛡️</i>Plan</button><button data-v="daha"><i>⋯</i>Daha</button></nav>
 <div id="sbar" style="display:none"></div>
 <div id="toasts"></div>
 <script>/* Teknik analiz hesap motoru. Bağımlılık yok. Tarayıcıda ve Node'da çalışır. */
@@ -2114,7 +2114,7 @@ function detayHTML(d){
   if(d.short)return '<div class="card">Bu zaman diliminde yeterli mum yok ('+d.N+'). En az 60 mum gerekir.</div>';
   const A=d.A,sc=scoreOf(d,S.all),rel=d.rel,price=A.price;
   try{const W=[];if(S.mk!=='fut'){const n=S.depth,w=S.wide;[].concat(n?n.bw.slice(0,2).concat(n.aw.slice(0,2)):[],w?w.bw.slice(0,2).concat(w.aw.slice(0,2)):[]).forEach(x=>W.push({p:x.p,lab:x.lab,w:1.5}));}A.conf=TA_CONF.build(d,{walls:W,fvg:fvgNear(d,price,8).filter(f=>f.i>=d.N-300)});}catch(e){console.error('conf',e);A.conf=null;}
-  const H={rehber:'',head:'',chart:'',test:'',arac:'',grafik:'',emir:'',gosterge:'',seviye:'',guven:'',sozluk:''};let cur='head';
+  const H={rehber:'',head:'',chart:'',test:'',arac:'',grafik:'',emir:'',gosterge:'',seviye:'',guven:'',sozluk:'',skor:''};let cur='head';
   H.head+=nearHTML(A,price)+summaryHTML(d,sc,rel);
   H.head+='<details class="card fold" id="vinfo"><summary>📖 Varlık bilgisi · '+esc(S.sym)+'</summary>'+cminiHTML(S.sym).replace('class="card cmini"','class="cmini"')+'</details>';
   const adxv=A.I.adx&&A.I.adx.adx?A.I.adx.adx[A.i]:NaN,e200=A.I.ema200?A.I.ema200[A.i]:NaN;
@@ -2213,9 +2213,16 @@ function detayHTML(d){
   H.seviye+=gapHTML(price);
   cur='sozluk';
   H[cur]+='<div class="card"><h2>Gösterge sözlüğü</h2>'+Object.keys(INFO).sort((a,b)=>String(INFO[a].n).localeCompare(String(INFO[b].n),'tr',{sensitivity:'base'})).map(k=>{const x=INFO[k];return '<details><summary>'+esc(x.n)+'</summary><div class="note"><b>Ne demek:</b> '+esc(x.what)+'<br><b>Ne işe yarar:</b> '+esc(x.use)+'<br><b>Nasıl okunur:</b> '+esc(x.read)+'<br><b>Dikkat:</b> '+esc(x.warn)+'</div></details>';}).join('')+'</div>';
-  const DT=[['gosterge','Göstergeler'],['seviye','Seviyeler'],['emir',S.mk==='fut'?'Vadeli verileri':'Emir defteri'],['guven','Güvenilirlik ve geçmiş'],['test','Geçmiş test'],['arac','Risk ve uyarılar'],['gunluk','İşlem günlüğü'],['yedek','Yedekleme'],['rehber','Kripto Rehberi'],['sozluk','Sözlük']];
-  if(!H[S.dtab]||S.dtab==='grafik')S.dtab='gosterge';S.H=H;S.DT=DT;
-  if(S.view!=='grafik'&&!(VG[S.view]||[]).includes(S.dtab))S.dtab=(VG[S.view]||['gosterge'])[0];
+  
+  {const k0='<details style="margin-top:8px"><summary>Skor nasıl oluştu?',i0=H.head.indexOf(k0);
+   if(i0>=0){let dep=0,j=i0,end=-1;const re=/<details\b|<\/details>/g;re.lastIndex=i0;let m;
+     while((m=re.exec(H.head))){if(m[0]==='</details>'){dep--;if(dep===0){end=m.index+10;break;}}else dep++;}
+     if(end>0){const blk=H.head.slice(i0,end);H.head=H.head.slice(0,i0)+'<div class="note" style="margin-top:8px">Skorun nasıl oluştuğu: <b>Neden</b> sekmesi → Skor dağılımı.</div>'+H.head.slice(end);
+       H.skor='<div class="card"><h2>Skor dağılımı'+info('sc')+'</h2>'+blk.replace('<details style="margin-top:8px">','<details open style="margin-top:8px">')+'</div>';}}
+   if(!H.skor)H.skor='<div class="card"><div class="note">Skor dağılımı bu veride gösterilemiyor.</div></div>';}
+  const DT=[['skor','Skor dağılımı'],['gosterge','Göstergeler'],['seviye','Seviyeler'],['emir',S.mk==='fut'?'Vadeli verileri':'Emir defteri'],['guven','Güvenilirlik ve geçmiş'],['test','Geçmiş test'],['arac','Risk ve uyarılar'],['gunluk','İşlem günlüğü'],['yedek','Yedekleme'],['rehber','Kripto Rehberi'],['sozluk','Sözlük']];
+  if(!H[S.dtab]||S.dtab==='grafik')S.dtab='skor';S.H=H;S.DT=DT;
+  if(S.view!=='grafik'&&!(VG[S.view]||[]).includes(S.dtab))S.dtab=(VG[S.view]||['skor'])[0];
   return '<div id="dv" data-view="'+S.view+'"><div class="vg">'+H.chart+H.head+'</div>'+srchHTML()+'<div class="tabs dtabs'+((VG[S.view]||[]).length<2&&S.view!=='daha'?' one':'')+'" id="dtabs">'+subPills()+'</div><div id="dbody">'+(S.view==='grafik'?'':H[S.dtab])+'</div></div>';
 }
 
@@ -2450,16 +2457,16 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){const sp=$('#spanel');if(sp)sp.classList.add('hide');}});
 
 /* ---------- alt gezinme çubuğu ---------- */
-const VG={analiz:['gosterge','guven'],seviye:['seviye','emir'],daha:['arac','gunluk','test','yedek','rehber','sozluk']};
+const VG={neden:['skor','gosterge','guven','test'],seviye:['seviye','emir'],plan:['arac','gunluk'],daha:['yedek','rehber','sozluk']};
 function subPills(){const g=VG[S.view]||[];const nm=Object.fromEntries((S.DT||[]).map(x=>[x[0],x[1]]));
   return g.map(k=>'<button data-dtab="'+k+'" class="'+(S.dtab===k?'on':'')+'">'+nm[k]+'</button>').join('')+(S.view==='daha'?'<button id="copy">Raporu kopyala</button>':'');}
 function navSync(){const on=S.tab==='vade'?'vade':S.view;document.querySelectorAll('#bnav button').forEach(b=>b.classList.toggle('on',b.dataset.v===on));
   const has=!!(S.data[S.tf]&&S.data[S.tf].A)||(S.tab==='vade'&&S.data['1d']);const nv=$('#bnav');if(nv){nv.style.display=has?'flex':'none';document.body.classList.toggle('hasnav',!!has);}}
 function setView(v){
   if(v==='vade'){S.tab='vade';render();window.scrollTo(0,0);return;}
-  if(S.tab!=='detay'){S.tab='detay';S.view=v;render();window.scrollTo(0,0);return;}
+  if(S.tab!=='detay'){S.tab='detay';S.view=v;S.view0=v;if(VG[v])S.dtab=VG[v][0];render();window.scrollTo(0,0);return;}
   S.view=v;const dv=$('#dv');if(!dv){render();return;}
-  if(v!=='grafik'&&!(VG[v]||[]).includes(S.dtab))S.dtab=VG[v][0];
+  if(v!=='grafik'&&VG[v]&&(S.view0!==v||!VG[v].includes(S.dtab)))S.dtab=VG[v][0];S.view0=v;
   dv.dataset.view=v;const dt=$('#dtabs');dt.innerHTML=subPills();dt.classList.toggle('one',v!=='grafik'&&(VG[v]||[]).length<2&&v!=='daha');
   if(v!=='grafik'){$('#dbody').innerHTML=S.H[S.dtab];afterTab();}
   navSync();dockTb();window.scrollTo(0,0);if((v==='grafik'||v==='seviye')&&chart)chart.draw();
